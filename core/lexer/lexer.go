@@ -33,6 +33,31 @@ func (lex *Lexer) readNext() {
 	lex.readPos += lex.runeWidth
 }
 
+func (lex *Lexer) GetToken() tokenizer.Token {
+	var tok tokenizer.Token
+
+	switch lex.ch {
+	case '=':
+		tok = newToken(tokenizer.ASSIGN, lex.ch)
+	case ';':
+		tok = newToken(tokenizer.SEMICOLON, lex.ch)
+	case '(':
+		tok = newToken(tokenizer.LPAREN, lex.ch)
+	case ')':
+		tok = newToken(tokenizer.RPAREN, lex.ch)
+	case ',':
+		tok = newToken(tokenizer.COMMA, lex.ch)
+	case '+':
+		tok = newToken(tokenizer.PLUS, lex.ch)
+	case 0:
+		tok.Lit = ""
+		tok.Type = tokenizer.EOF
+	}
+
+	lex.readNext()
+	return tok
+}
+
 func newToken(typ tokenizer.TokenType, lit rune) tokenizer.Token {
 	return tokenizer.Token{Type: typ, Lit: string(lit)}
 }

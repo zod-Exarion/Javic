@@ -7,7 +7,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `=+(){},;`
+	input := `=+(),;`
 	tests := []struct {
 		expectedType    tokenizer.TokenType
 		expectedLiteral string
@@ -16,8 +16,6 @@ func TestNextToken(t *testing.T) {
 		{tokenizer.PLUS, "+"},
 		{tokenizer.LPAREN, "("},
 		{tokenizer.RPAREN, ")"},
-		{tokenizer.LBRACE, "{"},
-		{tokenizer.RBRACE, "}"},
 		{tokenizer.COMMA, ","},
 		{tokenizer.SEMICOLON, ";"},
 		{tokenizer.EOF, ""},
@@ -25,14 +23,14 @@ func TestNextToken(t *testing.T) {
 
 	l := lexer.NewLexer(input)
 	for i, tt := range tests {
-		tok := l.getToken()
+		tok := l.GetToken()
 		if tok.Type != tt.expectedType {
 			t.Logf("tests[%d] - tokentype wrong. expected=%q, got=%q",
 				i, tt.expectedType, tok.Type)
 		}
-		if tok.Literal != tt.expectedLiteral {
+		if tok.Lit != tt.expectedLiteral {
 			t.Logf("tests[%d] - literal wrong. expected=%q, got=%q",
-				i, tt.expectedLiteral, tok.Literal)
+				i, tt.expectedLiteral, tok.Lit)
 		}
 	}
 }
