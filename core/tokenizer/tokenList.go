@@ -26,6 +26,7 @@ const (
 	SEMICOLON = ";"
 	LPAREN    = "("
 	RPAREN    = ")"
+	NLINE     = "\\n"
 
 	// Keywords (common in QBASIC)
 	LET    = "LET"
@@ -46,3 +47,26 @@ const (
 	DIM    = "DIM"
 	REM    = "REM" // comment
 )
+
+var keuywords = map[string]TokenType{
+	"LET":   LET,
+	"PRINT": PRINT,
+	"INPUT": INPUT,
+	"IF":    IF,
+	"THEN":  THEN,
+	"ELSE":  ELSE,
+	"END":   END,
+	"FOR":   FOR,
+	"TO":    TO,
+	"NEXT":  NEXT,
+
+	// WARN: Dangerous Territory
+	"GOTO":  GOTO,
+	"GOSUB": GOSUB,
+
+	"RETURN": RETURN,
+	"WHILE":  WHILE,
+	"WEND":   WEND,
+	"DIM":    DIM,
+	"REM":    REM,
+}
