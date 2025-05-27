@@ -14,11 +14,15 @@ const (
 	PLUS     = "+"
 	MINUS    = "-"
 	ASTERISK = "*"
+	CARET    = "^"
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
 	EQ       = "=="
 	NEQ      = "<>"
+	EX       = "!"
+	POUND    = "$"
+	SQUOTE   = "'"
 
 	// Delimiters
 	COMMA     = ","
@@ -28,7 +32,13 @@ const (
 	RPAREN    = ")"
 	NLINE     = "\\n"
 
+	// String
+	DQUOTE = `"`
+	STRING = "STRING"
+
 	// Keywords (common in QBASIC)
+	MOD    = "MOD"
+	NOT    = "NOT"
 	LET    = "LET"
 	PRINT  = "PRINT"
 	INPUT  = "INPUT"
@@ -46,6 +56,9 @@ const (
 	WEND   = "WEND"
 	DIM    = "DIM"
 	REM    = "REM" // comment
+	SELECT = "SELECT"
+	CASE   = "CASE"
+	IS     = "IS"
 )
 
 var keuywords = map[string]TokenType{
@@ -59,6 +72,8 @@ var keuywords = map[string]TokenType{
 	"FOR":   FOR,
 	"TO":    TO,
 	"NEXT":  NEXT,
+	"NOT":   NOT,
+	"MOD":   MOD,
 
 	// WARN: Dangerous Territory
 	"GOTO":  GOTO,
@@ -69,4 +84,32 @@ var keuywords = map[string]TokenType{
 	"WEND":   WEND,
 	"DIM":    DIM,
 	"REM":    REM,
+}
+
+var singleton = map[string]TokenType{
+	// Operators
+	"=":  ASSIGN,
+	"+":  PLUS,
+	"-":  MINUS,
+	"*":  ASTERISK,
+	"^":  CARET,
+	"/":  SLASH,
+	"<":  LT,
+	">":  GT,
+	"==": EQ,
+	"<>": NEQ,
+	"!":  EX,
+	"$":  POUND,
+	"'":  SQUOTE,
+
+	// String
+	`"`: DQUOTE,
+
+	// Delimiters
+	",":   COMMA,
+	":":   COLON,
+	";":   SEMICOLON,
+	"(":   LPAREN,
+	")":   RPAREN,
+	"\\n": NLINE,
 }

@@ -2,14 +2,12 @@ package test
 
 import (
 	"javic/cmd/javic"
-	"javic/core/lexer"
-	"javic/core/tokenizer"
+	"javic/qbasic/tokenizer"
 	"testing"
 )
 
 func TestNextToken(t *testing.T) {
 	tp := javic.NewTranspiler("qb/dummy.bas")
-	input := tp.Content
 
 	tests := []struct {
 		expectedType    tokenizer.TokenType
@@ -21,7 +19,7 @@ func TestNextToken(t *testing.T) {
 		{tokenizer.NLINE, ""},
 		{tokenizer.IDENT, "Y"},
 		{tokenizer.ASSIGN, "="},
-		{tokenizer.NUMBER, "8"},
+		{tokenizer.NUMBER, "8.2"},
 		{tokenizer.NLINE, ""},
 		{tokenizer.PRINT, "PRINT"},
 		{tokenizer.IDENT, "Y"},
@@ -29,9 +27,45 @@ func TestNextToken(t *testing.T) {
 		{tokenizer.IDENT, "X"},
 		{tokenizer.COMMA, ","},
 		{tokenizer.NUMBER, "0"},
+		{tokenizer.NLINE, ""},
+
+		{tokenizer.IDENT, "E"},
+		{tokenizer.ASSIGN, "="},
+		{tokenizer.NUMBER, "1"},
+		{tokenizer.NLINE, ""},
+
+		{tokenizer.IF, "IF"},
+		{tokenizer.NOT, "NOT"},
+		{tokenizer.IDENT, "E"},
+		{tokenizer.THEN, "THEN"},
+		{tokenizer.NLINE, ""},
+
+		{tokenizer.IF, "IF"},
+		{tokenizer.IDENT, "E"},
+		{tokenizer.ASSIGN, "="},
+		{tokenizer.NUMBER, "0"},
+		{tokenizer.THEN, "THEN"},
+		{tokenizer.NLINE, ""},
+		{tokenizer.PRINT, "PRINT"},
+		{tokenizer.MINUS, "-"},
+		{tokenizer.NUMBER, "69"},
+		{tokenizer.NLINE, ""},
+		{tokenizer.ELSE, "ELSE"},
+		{tokenizer.NLINE, ""},
+		{tokenizer.PRINT, "PRINT"},
+		{tokenizer.IDENT, "E"},
+		{tokenizer.NLINE, ""},
+
+		{tokenizer.END, "END"},
+		{tokenizer.IF, "IF"},
+		{tokenizer.NLINE, ""},
+
+		{tokenizer.END, "END"},
+		{tokenizer.IF, "IF"},
+		{tokenizer.NLINE, ""},
 	}
 
-	l := lexer.NewLexer(input)
+	l := tp.Lexer
 	for i, tt := range tests {
 		tok := l.GetToken()
 		if tok.Type != tt.expectedType {

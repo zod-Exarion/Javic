@@ -21,7 +21,7 @@ func isLetter(ch rune) bool {
 }
 
 func isDigit(ch rune) bool {
-	return ch >= '0' && ch <= '9'
+	return (ch >= '0' && ch <= '9') || ch == '.'
 }
 
 func (lex *Lexer) readIdentifier() string {
@@ -42,4 +42,15 @@ func (lex *Lexer) readNumber() string {
 	}
 
 	return lex.input[initPos:lex.pos]
+}
+
+func (lex *Lexer) readString(delim rune) string {
+	initPos := lex.pos
+
+	lex.readNext()
+	for lex.ch != delim {
+		lex.readNext()
+	}
+
+	return lex.input[initPos : lex.pos+1]
 }

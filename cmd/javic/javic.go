@@ -2,7 +2,8 @@ package javic
 
 import (
 	"fmt"
-	"javic/core/tokenizer"
+	"javic/qbasic/lexer"
+	"javic/qbasic/tokenizer"
 	"os"
 	"strings"
 )
@@ -11,17 +12,14 @@ type Transpiler struct {
 	FileName string
 	Content  string
 	Tokens   []tokenizer.Token
+	Lexer    *lexer.Lexer
 }
 
 func Javic(fileName string) {
-	// lex := lexer.NewLexer(string(content))
-	// for range content {
-	// 	tok := lex.GetToken()
-	// 	if tok.Type == tokenizer.EOF {
-	// 		break
-	// 	}
-	// 	fmt.Printf("%v -> %v\n", tok.Type, tok.Lit)
-	// }
+	tp := NewTranspiler(fileName)
+	tp.Tokenize()
+
+	tokenizer.DisplayTokens(tp.Tokens)
 }
 
 func NewTranspiler(fileName string) Transpiler {
@@ -30,8 +28,22 @@ func NewTranspiler(fileName string) Transpiler {
 		fmt.Printf("Error reading file: %v\n", err)
 		os.Exit(1)
 	}
-	return Transpiler{
+	tp := Transpiler{
 		Content:  (strings.ToUpper(string(content))),
 		FileName: fileName,
 	}
+	tp.InitLex()
+	return tp
+}
+
+func (t *Transpiler) InitLex() *Transpiler {
+	t.Lexer = lexer.NewLexer(t.Content)
+	return t
+}
+
+func (tp *Transpiler) Tokenize() *Transpiler {
+	for range tp.Content {
+		tp.Tokens = append(tp.Tokens, tp.Lexer.GetToken())
+	}
+	return tp
 }

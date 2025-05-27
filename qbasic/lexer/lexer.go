@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"javic/core/tokenizer"
+	"javic/qbasic/tokenizer"
 )
 
 type Lexer struct {
@@ -24,25 +24,16 @@ func (lex *Lexer) GetToken() tokenizer.Token {
 	lex.eatWhitespace() // Ensure this does NOT skip newline characters
 
 	switch lex.ch {
-	case '=':
-		tok = newToken(tokenizer.ASSIGN, lex.ch)
-	case ';':
-		tok = newToken(tokenizer.SEMICOLON, lex.ch)
-	case '(':
-		tok = newToken(tokenizer.LPAREN, lex.ch)
-	case ')':
-		tok = newToken(tokenizer.RPAREN, lex.ch)
-	case ',':
-		tok = newToken(tokenizer.COMMA, lex.ch)
-	case '+':
-		tok = newToken(tokenizer.PLUS, lex.ch)
 	case '\n':
 		tok.Type = tokenizer.NLINE
 		tok.Lit = ""
-
 	case 0:
 		tok.Lit = ""
 		tok.Type = tokenizer.EOF
+	case '"':
+		tok.Type = tokenizer.STRING
+		tok.Lit = lex.readString('"')
+
 	default:
 		if isLetter(lex.ch) {
 			tok.Lit = lex.readIdentifier()
@@ -53,8 +44,7 @@ func (lex *Lexer) GetToken() tokenizer.Token {
 			tok.Type = tokenizer.NUMBER
 			return tok
 		} else {
-			tok.Lit = ""
-			tok.Type = tokenizer.ILLEGAL
+			tok = newToken(tokenizer.CheckSingleton(string(lex.ch)), lex.ch)
 		}
 	}
 
