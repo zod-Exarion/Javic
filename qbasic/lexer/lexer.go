@@ -33,6 +33,20 @@ func (lex *Lexer) GetToken() tokenizer.Token {
 	case '"':
 		tok.Type = tokenizer.STRING
 		tok.Lit = lex.readString('"')
+	case '<':
+		if lex.peekNext() == '>' {
+			tok.Type = tokenizer.NEQ
+			tok.Lit = lex.readString('>')
+		} else {
+			tok = newToken(tokenizer.LT, lex.ch)
+		}
+	case '>':
+		if lex.peekNext() == '<' {
+			tok.Type = tokenizer.NEQ
+			tok.Lit = lex.readString('<')
+		} else {
+			tok = newToken(tokenizer.GT, lex.ch)
+		}
 
 	default:
 		if isLetter(lex.ch) {

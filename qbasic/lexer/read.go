@@ -16,6 +16,14 @@ func (lex *Lexer) readNext() {
 	lex.readPos += lex.runeWidth
 }
 
+func (lex *Lexer) peekNext() byte {
+	if lex.readPos >= len(lex.input) {
+		return 0
+	} else {
+		return lex.input[lex.readPos]
+	}
+}
+
 func isLetter(ch rune) bool {
 	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_'
 }

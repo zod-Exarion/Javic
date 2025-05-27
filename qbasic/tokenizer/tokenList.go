@@ -18,7 +18,6 @@ const (
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
-	EQ       = "=="
 	NEQ      = "<>"
 	EX       = "!"
 	POUND    = "$"
@@ -96,7 +95,6 @@ var singleton = map[string]TokenType{
 	"/":  SLASH,
 	"<":  LT,
 	">":  GT,
-	"==": EQ,
 	"<>": NEQ,
 	"!":  EX,
 	"$":  POUND,
