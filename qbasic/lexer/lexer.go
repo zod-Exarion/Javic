@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"javic/qbasic/tokenizer"
+	"strings"
 )
 
 type Lexer struct {
@@ -51,7 +52,7 @@ func (lex *Lexer) GetToken() tokenizer.Token {
 	default:
 		if isLetter(lex.ch) {
 			tok.Lit = lex.readIdentifier()
-			tok.Type = tokenizer.CheckKeyword(tok.Lit)
+			tok.Type = tokenizer.CheckKeyword(strings.ToUpper(tok.Lit))
 			return tok
 		} else if isDigit(lex.ch) {
 			tok.Lit = lex.readNumber()

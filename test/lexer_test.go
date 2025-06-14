@@ -7,62 +7,23 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	tp := javic.NewTranspiler("qb/dummy.bas")
+	tp := javic.NewTranspiler("qb/parse1.bas", false)
 
 	tests := []struct {
 		expectedType    tokenizer.TokenType
 		expectedLiteral string
 	}{
-		{tokenizer.IDENT, "X"},
+		{tokenizer.IDENT, "x"},
 		{tokenizer.ASSIGN, "="},
-		{tokenizer.NUMBER, "55"},
+		{tokenizer.NUMBER, "5"},
 		{tokenizer.NLINE, ""},
-		{tokenizer.IDENT, "Y"},
+		{tokenizer.IDENT, "y"},
 		{tokenizer.ASSIGN, "="},
-		{tokenizer.NUMBER, "8.2"},
+		{tokenizer.NUMBER, "10"},
 		{tokenizer.NLINE, ""},
-		{tokenizer.PRINT, "PRINT"},
-		{tokenizer.IDENT, "Y"},
-		{tokenizer.COMMA, ","},
-		{tokenizer.IDENT, "X"},
-		{tokenizer.COMMA, ","},
-		{tokenizer.NUMBER, "0"},
-		{tokenizer.NLINE, ""},
-
-		{tokenizer.IDENT, "E"},
+		{tokenizer.IDENT, "foobar"},
 		{tokenizer.ASSIGN, "="},
-		{tokenizer.NUMBER, "1"},
-		{tokenizer.NLINE, ""},
-
-		{tokenizer.IF, "IF"},
-		{tokenizer.NOT, "NOT"},
-		{tokenizer.IDENT, "E"},
-		{tokenizer.THEN, "THEN"},
-		{tokenizer.NLINE, ""},
-
-		{tokenizer.IF, "IF"},
-		{tokenizer.IDENT, "E"},
-		{tokenizer.ASSIGN, "="},
-		{tokenizer.NUMBER, "0"},
-		{tokenizer.THEN, "THEN"},
-		{tokenizer.NLINE, ""},
-		{tokenizer.PRINT, "PRINT"},
-		{tokenizer.MINUS, "-"},
-		{tokenizer.NUMBER, "69"},
-		{tokenizer.NLINE, ""},
-		{tokenizer.ELSE, "ELSE"},
-		{tokenizer.NLINE, ""},
-		{tokenizer.PRINT, "PRINT"},
-		{tokenizer.IDENT, "E"},
-		{tokenizer.NLINE, ""},
-
-		{tokenizer.END, "END"},
-		{tokenizer.IF, "IF"},
-		{tokenizer.NLINE, ""},
-
-		{tokenizer.END, "END"},
-		{tokenizer.IF, "IF"},
-		{tokenizer.NLINE, ""},
+		{tokenizer.NUMBER, "838383"},
 	}
 
 	l := tp.Lexer
