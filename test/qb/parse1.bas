@@ -1,3 +1,3 @@
-x = 5
-y = 10
-foobar = 838383
+Let x = 5
+Let y = 10
+Let foobar = 838383

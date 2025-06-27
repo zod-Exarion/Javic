@@ -13,15 +13,18 @@ func TestNextToken(t *testing.T) {
 		expectedType    tokenizer.TokenType
 		expectedLiteral string
 	}{
-		{tokenizer.IDENT, "x"},
+		{tokenizer.LET, "LET"},
+		{tokenizer.IDENT, "X"},
 		{tokenizer.ASSIGN, "="},
 		{tokenizer.NUMBER, "5"},
 		{tokenizer.NLINE, ""},
-		{tokenizer.IDENT, "y"},
+		{tokenizer.LET, "LET"},
+		{tokenizer.IDENT, "Y"},
 		{tokenizer.ASSIGN, "="},
 		{tokenizer.NUMBER, "10"},
 		{tokenizer.NLINE, ""},
-		{tokenizer.IDENT, "foobar"},
+		{tokenizer.LET, "LET"},
+		{tokenizer.IDENT, "FOOBAR"},
 		{tokenizer.ASSIGN, "="},
 		{tokenizer.NUMBER, "838383"},
 	}

@@ -29,5 +29,16 @@ func (p *Parser) getNextToken() {
 }
 
 func (p *Parser) ParseProgram() *Program {
-	return &Program{}
+	program := &Program{}
+	program.Statements = []Statement{}
+
+	for p.curToken.Type != tokenizer.EOF {
+		statement := p.parseStatement()
+		if statement != nil {
+			program.Statements = append(program.Statements, statement)
+		}
+		p.getNextToken()
+	}
+
+	return program
 }
