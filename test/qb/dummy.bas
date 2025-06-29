@@ -4,7 +4,7 @@ Print Y, X, 0
 
 e = 1
 If Not e Then
-    If e >< 0 Then
+    If e <> 0 Then
         Print -69 Mod 10
     Else
         Print e

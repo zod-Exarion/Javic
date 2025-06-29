@@ -1,61 +1,68 @@
 package parser
 
 import (
+	"bytes"
 	"javic/qbasic/tokenizer"
 )
 
-type Identifier struct {
+type SingleOperandStatmenet struct {
 	Token tokenizer.Token
-	Value string
+	Value Expression
 }
 
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Lit }
+func (ss *SingleOperandStatmenet) statementNode()       {}
+func (ss *SingleOperandStatmenet) TokenLiteral() string { return ss.Token.Lit }
 
-type AssignmentStatement struct {
-	Token tokenizer.Token
-	Name  *Identifier
-	Value *Expression
+type DoubleOperandStatmenet struct {
+	SingleOperandStatmenet
+	Name *Identifier
 }
 
-func (as *AssignmentStatement) statementNode()       {}
-func (as *AssignmentStatement) TokenLiteral() string { return as.Token.Lit }
+func (s *SingleOperandStatmenet) String() string {
+	var out bytes.Buffer
 
-func (p *Parser) parseStatement() Statement {
-	switch p.curToken.Type {
-	case tokenizer.LET:
-		return p.parseLetStatement()
-	default:
-		return nil
+	out.WriteString(s.TokenLiteral() + " ")
+
+	if s.Value != nil {
+		out.WriteString(s.Value.String())
 	}
+
+	return out.String()
 }
 
-func (p *Parser) parseLetStatement() *AssignmentStatement {
-	statement := &AssignmentStatement{Token: p.curToken}
+func (s *DoubleOperandStatmenet) String() string {
+	var out bytes.Buffer
 
-	if !p.expectToken(tokenizer.IDENT) {
-		return nil
+	out.WriteString(s.TokenLiteral() + " ")
+	out.WriteString(s.Name.String())
+	out.WriteString(" = ")
+
+	if s.Value != nil {
+		out.WriteString(s.Value.String())
 	}
 
-	statement.Name = &Identifier{p.curToken, p.curToken.Lit}
-
-	if !p.expectToken(tokenizer.ASSIGN) {
-		return nil
-	}
-
-	// TODO: Skipping all literal/expressions until newline for now
-	for p.curToken.Type != tokenizer.NLINE {
-		p.getNextToken()
-	}
-
-	return statement
+	return out.String()
 }
 
-func (p *Parser) expectToken(t tokenizer.TokenType) bool {
-	if p.nextToken.Type == t {
-		p.getNextToken()
-		return true
-	} else {
-		return false
+func (s *InputStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(s.TokenLiteral() + " ")
+
+	if s.Value != nil {
+		out.WriteString(s.Value.String())
 	}
+
+	out.WriteString(" , ")
+	out.WriteString(s.Name.String())
+
+	return out.String()
 }
+
+type (
+	AssignmentStatement struct{ DoubleOperandStatmenet }
+	ReturnStatement     struct{ SingleOperandStatmenet }
+	PrintStatement      struct{ SingleOperandStatmenet }
+	NotStatement        struct{ SingleOperandStatmenet }
+	InputStatement      struct{ DoubleOperandStatmenet }
+)

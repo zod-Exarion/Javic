@@ -1,5 +1,5 @@
 i = 10
-If i = 5 Then
+If i < 5 Then
     Print "pro"
 Else
     Print "nopewow"

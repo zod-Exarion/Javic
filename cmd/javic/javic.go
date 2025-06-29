@@ -18,7 +18,9 @@ type Transpiler struct {
 
 func Javic(fileName string) {
 	tp := NewTranspiler(fileName, true)
-	tp.Parser.ParseProgram()
+	prog := tp.Parser.ParseProgram()
+
+	fmt.Println(prog.String())
 }
 
 func NewTranspiler(fileName string, advparser bool) Transpiler {
@@ -30,6 +32,16 @@ func NewTranspiler(fileName string, advparser bool) Transpiler {
 	tp := Transpiler{
 		Content:  string(content),
 		FileName: fileName,
+	}
+
+	tp.initTranspiler(advparser)
+	return tp
+}
+
+func NewTranspilerFromString(content string, advparser bool) Transpiler {
+	tp := Transpiler{
+		Content:  content,
+		FileName: "",
 	}
 
 	tp.initTranspiler(advparser)

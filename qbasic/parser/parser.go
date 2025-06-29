@@ -1,19 +1,21 @@
 package parser
 
 import (
+	"fmt"
 	"javic/qbasic/lexer"
 	"javic/qbasic/tokenizer"
 )
 
 type Parser struct {
-	lex *lexer.Lexer
+	lex    *lexer.Lexer
+	errors []string
 
 	curToken  tokenizer.Token
 	nextToken tokenizer.Token
 }
 
 func NewParser(lex *lexer.Lexer, flag bool) *Parser {
-	p := &Parser{lex: lex}
+	p := &Parser{lex: lex, errors: []string{}}
 
 	if flag {
 		p.getNextToken()
@@ -26,6 +28,15 @@ func NewParser(lex *lexer.Lexer, flag bool) *Parser {
 func (p *Parser) getNextToken() {
 	p.curToken = p.nextToken
 	p.nextToken = p.lex.GetToken()
+}
+
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) nextError(t tokenizer.TokenType) {
+	err := fmt.Sprintf("expected %s got %s", t, p.nextToken.Type)
+	p.errors = append(p.errors, err)
 }
 
 func (p *Parser) ParseProgram() *Program {
