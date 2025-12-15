@@ -1,5 +1,15 @@
 package lexer
 
+/* INFO: Absolute massive list of all the tokens to be used in the lexer
+*
+*  WARN: Inefficient due to the use to strings as the constants, byte/int is much more computationally efficient
+*
+* Constants -> Typing lexer.ILLEGAL essentially just substitutes "ILLEGAL", this is just for convenince: nothing of substance here other than ease of development for the programmer/debugger
+*
+* Maps -> We create two maps - Keywords/Singletons, in order to segregate them for future benefits.
+* Also, by assigning the string value to the same string value (Wrapped as TokenType here) -> we can easily check if the current scanned series of runes is indeed a valid keyword or singleton.
+ */
+
 const (
 	// Special tokens
 	ILLEGAL = "ILLEGAL"

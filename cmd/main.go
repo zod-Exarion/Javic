@@ -26,5 +26,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	lexer.Lex(string(content))
+	lexer.DisplayTokens(lexer.Lex(string(content)))
 }
