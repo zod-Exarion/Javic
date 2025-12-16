@@ -15,7 +15,6 @@
 package parser
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/zod-Exarion/javic/lexer"
@@ -50,6 +49,9 @@ func Parse(tokens []lexer.Token) []Statement {
 	return statements
 }
 
+// 1. Sets current token to the previously peeked token
+// 2. If safe, assigns peek to the next token [since pos is always one step ahead]
+// 3. pos: 0 when peek = nil, pos:1 when peek = token[0]
 func (p *Parser) next() {
 	p.cur = p.peek
 	if p.pos < len(p.tokens) {
@@ -69,12 +71,8 @@ func (p *Parser) parseStatement() Statement {
 	}
 }
 
-func DisplayStatements(statements []Statement) {
-	for i := range statements {
-		fmt.Printf("%v\n", statements[i])
-	}
-}
-
+// Checks if the next token is the proper type expected
+// The param is specific to each statement, e.g: LET expects an identifier and a =
 func (p *Parser) expectToken(t lexer.TokenType) bool {
 	if p.peek.Type == t {
 		p.next()

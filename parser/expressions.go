@@ -7,8 +7,9 @@ import (
 	"github.com/zod-Exarion/javic/lexer"
 )
 
-type ExpressionType int
+type ExpressionType int // another wrapper around int for the ease of the developer
 
+// constant wrappers for the ease of the developer
 const (
 	Number StatementType = iota
 	Ident
@@ -16,6 +17,8 @@ const (
 	Unary
 )
 
+// HACK: Same logic as Statement struct: interfaces too hard :( just create struct where only the respective
+// (detected expression type's respective field) is non-nil
 type Expression struct {
 	kind StatementType
 
@@ -25,6 +28,7 @@ type Expression struct {
 	unaryExpression  *UnaryExpression
 }
 
+// INFO: Here we define the expressions
 type BinaryExpression struct {
 	left  Expression
 	op    string
@@ -36,6 +40,20 @@ type UnaryExpression struct {
 	expression Expression
 }
 
+// INFO: Here we define the functions to parse the expressions
+
+// PERF: Signature Pratt-Parsing recursive descent (lot of fancy words)
+//
+// 1. call our parsePrimary function to prase the type of expression
+//
+// 2. If the next token is a newline or if the precedence of it is =< our current token, we simply return the expression
+// e.g: let x = 20, so our 'Expression' part, [Value] in LetStatmenet is the expression
+// Numbers have the precedence zero, so it simply returns 20 without recursion
+//
+// 3. now it gets juicy lol. If it isn't an nline and the precedence is greater than current.
+// store the operator and RECURSE over the right side
+// e.g let x = 20 + 30, it would first get 20, but then create binaryExpresion {left: 20, op: +, right: 20}
+// If its somethjing like 20 + 30 + 40 + 50, then it keeps recursing the right side from [30 + 40 + 50] to [40 + 50] to [50]
 func (p *Parser) parseExpression(prec int) Expression {
 	left := p.parsePrimary()
 
@@ -61,13 +79,14 @@ func (p *Parser) parseExpression(prec int) Expression {
 	return left
 }
 
+// INFO: checks what type of token it is and returns the respective expression struct
 func (p *Parser) parsePrimary() Expression {
 	switch p.cur.Type {
 	case lexer.NUMBER:
-		n, _ := strconv.ParseInt(p.cur.Lit, 10, 64)
+		n, _ := strconv.ParseInt(p.cur.Lit, 10, 64) // converts string to number
 		return Expression{kind: Number, numberExpression: n}
 	case lexer.IDENT:
-		return Expression{kind: Ident, identExpression: p.cur.Lit}
+		return Expression{kind: Ident, identExpression: p.cur.Lit} // simply return identifier
 	case lexer.LPAREN:
 		p.next() // skips to expression
 		expr := p.parseExpression(0)
@@ -81,31 +100,5 @@ func (p *Parser) parsePrimary() Expression {
 	default:
 		log.Fatal("Unrecognized expression")
 		return Expression{} // unrecognizable expression, doesnt get added in the final list of expressions
-	}
-}
-
-func (e Expression) String() string {
-	switch e.kind {
-	case Number:
-		return strconv.FormatInt(e.numberExpression, 10)
-
-	case Ident:
-		return e.identExpression
-
-	case Binary:
-		return "(" +
-			e.binaryExpression.left.String() +
-			" " + e.binaryExpression.op + " " +
-			e.binaryExpression.right.String() +
-			")"
-
-	case Unary:
-		return "(" +
-			e.unaryExpression.op +
-			e.unaryExpression.expression.String() +
-			")"
-
-	default:
-		return "<unknown expr>"
 	}
 }
