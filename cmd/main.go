@@ -6,9 +6,10 @@ import (
 	"os"
 
 	"github.com/zod-Exarion/javic/lexer"
+	"github.com/zod-Exarion/javic/parser"
 )
 
-// INFO: Reads the file, tosses it to the lexer
+// INFO: Reads the file, tosses it to the lexer, tosses list of tokens to parser
 func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: javic <file.bas>")
@@ -26,5 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	lexer.DisplayTokens(lexer.Lex(string(content)))
+	// lexer.DisplayTokens(lexer.Lex(string(content)))
+	tokens := lexer.Lex(string(content))
+	parser.DisplayStatements(parser.Parse(tokens))
 }
