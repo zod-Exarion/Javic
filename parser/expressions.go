@@ -88,17 +88,20 @@ func (p *Parser) parsePrimary() Expression {
 	case lexer.IDENT:
 		return Expression{kind: Ident, identExpression: p.cur.Lit} // simply return identifier
 	case lexer.LPAREN:
-		p.next() // skips to expression
-		expr := p.parseExpression(0)
-
-		if p.cur.Type != lexer.RPAREN {
-			log.Fatal("Expected ')' after expression")
-		}
-
-		p.next() // consumes ')'
-		return expr
+		return p.parseGroupedExpression()
 	default:
 		log.Fatal("Unrecognized expression")
 		return Expression{} // unrecognizable expression, doesnt get added in the final list of expressions
 	}
+}
+
+// PERF: Prone to off-by-one errors, DO NOT TOUCH.
+func (p *Parser) parseGroupedExpression() Expression {
+	p.next() // skips to expression
+	expr := p.parseExpression(0)
+
+	p.expectToken(lexer.RPAREN) // expect the right parenthesis
+
+	// p.next() // consumes ')' // WARN: If we skip to next, creates parser off by one error
+	return expr
 }
