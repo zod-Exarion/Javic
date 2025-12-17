@@ -20,6 +20,16 @@ import (
 	"github.com/zod-Exarion/javic/lexer"
 )
 
+// again, constants for the ease of the developer
+const (
+	IllegalStatement StatementType = iota
+	Let
+	Print
+	Input
+	If
+	For
+)
+
 type Parser struct {
 	tokens []lexer.Token
 	pos    int
@@ -38,7 +48,7 @@ func Parse(tokens []lexer.Token) []Statement {
 
 	// INFO: Loop though all the tokens and append it to the list of statements
 	for p.cur.Type != lexer.EOF {
-		stmt := p.parseStatement()
+		stmt := p.ParseStatement()
 		if stmt.kind != 0 { // If parseStatment() returns empty statement(unrecognized) -> dont add it to the list
 			statements = append(statements, stmt)
 		}
@@ -60,12 +70,19 @@ func (p *Parser) next() {
 	p.pos++
 }
 
-func (p *Parser) parseStatement() Statement {
+func (p *Parser) ParseStatement() Statement {
+	// p.skipNewlines()
 	switch p.cur.Type {
 	case lexer.LET:
 		return Statement{kind: Let, letStatement: p.parseLetStatement()}
 	case lexer.PRINT:
 		return Statement{kind: Print, printStatement: p.parsePrintStatement()}
+	case lexer.INPUT:
+		return Statement{kind: Input, inputStatement: p.parseInputStatement()}
+	case lexer.IF:
+		return Statement{kind: If, ifStatement: p.parseIfStatement()}
+	// case lexer.FOR:
+	// 	return Statement{kind: For, inputStatement: p.parseForStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}

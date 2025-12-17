@@ -1,0 +1,7 @@
+Parser: 
+input Statements 
+If Statements 
+For Loop 
+while loop 
+Not statement 
+rem statement 

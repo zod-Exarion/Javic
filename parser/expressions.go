@@ -13,6 +13,7 @@ type ExpressionType int // another wrapper around int for the ease of the develo
 const (
 	Number StatementType = iota
 	Ident
+	String
 	Binary
 	Unary
 )
@@ -24,6 +25,7 @@ type Expression struct {
 
 	numberExpression int64
 	identExpression  string
+	stringExpression string
 	binaryExpression *BinaryExpression
 	unaryExpression  *UnaryExpression
 }
@@ -89,6 +91,8 @@ func (p *Parser) parsePrimary() Expression {
 		return Expression{kind: Ident, identExpression: p.cur.Lit} // simply return identifier
 	case lexer.LPAREN:
 		return p.parseGroupedExpression()
+	case lexer.STRING:
+		return Expression{kind: String, stringExpression: p.cur.Lit}
 	default:
 		log.Fatal("Unrecognized expression")
 		return Expression{} // unrecognizable expression, doesnt get added in the final list of expressions
