@@ -56,6 +56,12 @@ func (s Statement) String() string {
 	case For:
 		return s.forStatement.String()
 
+	case Cls:
+		return "CLS"
+
+	case End:
+		return "END"
+
 	default:
 		return "<unknown stmt>"
 	}

@@ -46,21 +46,23 @@ const (
 	STRING = "STRING"
 
 	// Keywords (common in QBASIC)
+	// DONE
+	LET   = "LET"
+	PRINT = "PRINT"
+	INPUT = "INPUT"
+	IF    = "IF"
+	THEN  = "THEN"
+	ELSE  = "ELSE"
+	END   = "END"
+	FOR   = "FOR"
+	TO    = "TO"
+	NEXT  = "NEXT"
+	STEP  = "STEP"
+	CLS   = "CLS"
+
+	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
 	MOD    = "MOD"
 	NOT    = "NOT"
-	LET    = "LET"
-	PRINT  = "PRINT"
-	INPUT  = "INPUT"
-	IF     = "IF"
-	THEN   = "THEN"
-	ELSE   = "ELSE"
-	END    = "END"
-	FOR    = "FOR"
-	TO     = "TO"
-	NEXT   = "NEXT"
-	GOTO   = "GOTO"
-	GOSUB  = "GOSUB"
-	RETURN = "RETURN"
 	WHILE  = "WHILE"
 	WEND   = "WEND"
 	DIM    = "DIM"
@@ -68,33 +70,40 @@ const (
 	SELECT = "SELECT"
 	CASE   = "CASE"
 	IS     = "IS"
-	STEP   = "STEP"
+
+	// I dont really know if I want to
+	FUNCTION = "FUNCTION"
+	RETURN   = "RETURN"
+
+	// GOTO   = "GOTO"
+	// GOSUB  = "GOSUB"
 )
 
 var keywords = map[string]TokenType{
-	"LET":   LET,
-	"PRINT": PRINT,
-	"INPUT": INPUT,
-	"IF":    IF,
-	"THEN":  THEN,
-	"ELSE":  ELSE,
-	"END":   END,
-	"FOR":   FOR,
-	"TO":    TO,
-	"NEXT":  NEXT,
-	"NOT":   NOT,
-	"MOD":   MOD,
-	"STEP":  STEP,
+	"CLS":      CLS,
+	"LET":      LET,
+	"PRINT":    PRINT,
+	"INPUT":    INPUT,
+	"IF":       IF,
+	"THEN":     THEN,
+	"ELSE":     ELSE,
+	"END":      END,
+	"FOR":      FOR,
+	"TO":       TO,
+	"NEXT":     NEXT,
+	"NOT":      NOT,
+	"MOD":      MOD,
+	"STEP":     STEP,
+	"RETURN":   RETURN,
+	"WHILE":    WHILE,
+	"WEND":     WEND,
+	"DIM":      DIM,
+	"REM":      REM,
+	"FUNCTION": FUNCTION,
 
-	// WARN: Dangerous Territory
-	"GOTO":  GOTO,
-	"GOSUB": GOSUB,
+	// "GOTO":  GOTO,
+	// "GOSUB": GOSUB,
 
-	"RETURN": RETURN,
-	"WHILE":  WHILE,
-	"WEND":   WEND,
-	"DIM":    DIM,
-	"REM":    REM,
 }
 
 var singleton = map[string]TokenType{

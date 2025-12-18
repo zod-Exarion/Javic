@@ -1,3 +1,4 @@
+CLS 
 FOR I = 1 TO 10
 PRINT I
 
@@ -7,3 +8,5 @@ PRINT HEHE
 
 INPUT "ur mom", HEHE 
 NEXT 
+END
+print wow 

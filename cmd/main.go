@@ -27,7 +27,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// lexer.DisplayTokens(lexer.Lex(string(content)))
 	tokens := lexer.Lex(string(content))
 	lexer.DisplayTokens(tokens)
 	parser.DisplayStatements(parser.Parse(tokens))

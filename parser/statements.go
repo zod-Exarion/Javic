@@ -18,6 +18,8 @@ type Statement struct {
 	inputStatement *InputStatement
 	ifStatement    *IfStatement
 	forStatement   *ForStatement
+	clsStatement   *ClsStatement
+	endStatement   *EndStatement
 }
 
 // INFO: Here we define each and every statement
@@ -50,6 +52,11 @@ type ForStatement struct {
 	step  Expression
 	body  []Statement
 }
+
+type (
+	ClsStatement struct{}
+	EndStatement struct{}
+)
 
 // INFO: Here we create functions to parse each and every statment
 func (p *Parser) parseLetStatement() *LetStatement {
@@ -84,7 +91,7 @@ func (p *Parser) parseInputStatement() *InputStatement {
 	p.expectToken(lexer.IDENT) // expect identifier
 
 	name := p.cur.Lit
-	p.next()
+	// p.next()
 
 	return &InputStatement{prompt: prompt, name: name}
 }
@@ -186,7 +193,6 @@ func (p *Parser) parseForStatement() *ForStatement {
 
 	for p.cur.Type != lexer.NEXT {
 		if p.cur.Type != lexer.NLINE {
-			fmt.Printf("Entered loop: got [%v -> %v]\n", p.cur.Type, p.cur.Lit)
 			stmt.body = append(stmt.body, p.ParseStatement())
 		}
 		p.next()
@@ -198,7 +204,21 @@ func (p *Parser) parseForStatement() *ForStatement {
 		p.next()
 	}
 
-	p.skipNewlines()
+	// p.skipNewlines()
 
 	return stmt
+}
+
+func (p *Parser) parseClsStatement() *ClsStatement {
+	p.next()
+
+	return &ClsStatement{}
+}
+
+func (p *Parser) parseEndStatement() *EndStatement {
+	fmt.Printf("entered parseEndStatement:  %v\n", p.cur.Type)
+	p.next()
+	fmt.Printf("exited parseEndStatement:  %v\n", p.cur.Type)
+
+	return &EndStatement{}
 }

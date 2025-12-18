@@ -28,6 +28,8 @@ const (
 	Input
 	If
 	For
+	Cls
+	End
 )
 
 type Parser struct {
@@ -83,6 +85,10 @@ func (p *Parser) ParseStatement() Statement {
 		return Statement{kind: If, ifStatement: p.parseIfStatement()}
 	case lexer.FOR:
 		return Statement{kind: For, forStatement: p.parseForStatement()}
+	case lexer.CLS:
+		return Statement{kind: Cls, clsStatement: p.parseClsStatement()}
+	case lexer.END:
+		return Statement{kind: End, endStatement: p.parseEndStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}
