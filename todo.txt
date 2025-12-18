@@ -1,7 +1,4 @@
 Parser: 
-input Statements 
-If Statements 
-For Loop 
 while loop 
-Not statement 
+Not expression? 
 rem statement 

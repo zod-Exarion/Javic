@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/zod-Exarion/javic/lexer"
@@ -42,7 +43,13 @@ type IfStatement struct {
 	antecendent  []Statement
 }
 
-type ForStatement struct{}
+type ForStatement struct {
+	name  string
+	init  Expression
+	final Expression
+	step  Expression
+	body  []Statement
+}
 
 // INFO: Here we create functions to parse each and every statment
 func (p *Parser) parseLetStatement() *LetStatement {
@@ -68,33 +75,22 @@ func (p *Parser) parsePrintStatement() *PrintStatement {
 }
 
 func (p *Parser) parseInputStatement() *InputStatement {
-	p.next() // current was 'INPUT'
-
 	p.expectToken(lexer.STRING) // expect string
 
 	prompt := p.cur.Lit
 
 	p.expectToken(lexer.COMMA) // except a ,
 
-	p.next() // cosume the ,
-
 	p.expectToken(lexer.IDENT) // expect identifier
 
 	name := p.cur.Lit
+	p.next()
 
 	return &InputStatement{prompt: prompt, name: name}
 }
 
 func (p *Parser) parseIfStatement() *IfStatement {
 	stmt := &IfStatement{}
-	/*
-		   If itemCount = 0 Then
-		       Print "  (Empty)"
-		   Else
-				Print "hi"
-		   End If
-	*/
-
 	p.next() // Current was IF
 	stmt.lhscondition = p.parseExpression(0)
 
@@ -111,14 +107,9 @@ func (p *Parser) parseIfStatement() *IfStatement {
 	for p.cur.Type != lexer.ELSE &&
 		!(p.cur.Type == lexer.END && p.peek.Type == lexer.IF) {
 
-		// p.skipNewlines()
-
-		// fmt.Printf("then block entered, cur token: [%v -> %v]\n", p.cur.Type, p.cur.Lit)
-
 		if p.cur.Type != lexer.NLINE {
 			stmt.consequence = append(stmt.consequence, p.ParseStatement())
 		}
-		// fmt.Printf("then block one statement read, cur token: [%v -> %v]\n", p.cur.Type, p.cur.Lit)
 		p.next()
 	}
 
@@ -128,15 +119,9 @@ func (p *Parser) parseIfStatement() *IfStatement {
 
 		for !(p.cur.Type == lexer.END && p.peek.Type == lexer.IF) {
 
-			// p.skipNewlines()
-
-			// fmt.Printf("else block entered,  cur token: [%v -> %v]\n", p.cur.Type, p.cur.Lit)
-			// fmt.Printf("else block entered,  peek token: [%v -> %v]\n", p.peek.Type, p.peek.Lit)
-
 			if p.cur.Type != lexer.NLINE {
 				stmt.antecendent = append(stmt.antecendent, p.ParseStatement())
 			}
-			// fmt.Printf("then block one statement read, cur token: [%v -> %v]\n", p.cur.Type, p.cur.Lit)
 			p.next()
 		}
 	}
@@ -170,4 +155,50 @@ func (p *Parser) parseComparisonOperator() string {
 	}
 
 	return ""
+}
+
+func (p *Parser) parseForStatement() *ForStatement {
+	/*
+		*FOR I = 1.5 TO 5.6 STEP 1
+			PRINT I
+		 NEXT
+	*/
+	stmt := &ForStatement{}
+	p.expectToken(lexer.IDENT) // expect identifier
+	stmt.name = p.cur.Lit
+	p.expectToken(lexer.ASSIGN) // expect =
+	p.next()                    // start of expression
+	stmt.init = p.parseExpression(0)
+	p.expectToken(lexer.TO) // expect TO
+	p.next()                // start of expression
+	stmt.final = p.parseExpression(0)
+	p.next() // end the expression
+
+	if p.cur.Type == lexer.STEP {
+		p.next()
+		stmt.step = p.parseExpression(0)
+		p.next() // cosume number
+	} else {
+		stmt.step = Expression{kind: Number, numberExpression: 1}
+	}
+
+	p.skipNewlines()
+
+	for p.cur.Type != lexer.NEXT {
+		if p.cur.Type != lexer.NLINE {
+			fmt.Printf("Entered loop: got [%v -> %v]\n", p.cur.Type, p.cur.Lit)
+			stmt.body = append(stmt.body, p.ParseStatement())
+		}
+		p.next()
+	}
+
+	p.next() // consume NEXT
+
+	if p.cur.Type == lexer.IDENT {
+		p.next()
+	}
+
+	p.skipNewlines()
+
+	return stmt
 }

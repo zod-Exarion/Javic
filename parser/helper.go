@@ -47,8 +47,14 @@ func (s Statement) String() string {
 	case Print:
 		return "PRINT " + s.printStatement.value.String()
 
+	case Input:
+		return "INPUT " + s.inputStatement.prompt + " , " + s.inputStatement.name
+
 	case If:
 		return s.ifStatement.String()
+
+	case For:
+		return s.forStatement.String()
 
 	default:
 		return "<unknown stmt>"
@@ -80,6 +86,28 @@ func (i *IfStatement) String() string {
 	}
 
 	out.WriteString("END IF")
+
+	return out.String()
+}
+
+func (f *ForStatement) String() string {
+	var out strings.Builder
+
+	out.WriteString("FOR ")
+	out.WriteString(f.name)
+	out.WriteString(" = ")
+	out.WriteString(f.init.String())
+	out.WriteString(" TO ")
+	out.WriteString(f.final.String())
+	out.WriteString(" STEP ")
+	out.WriteString(f.step.String() + "\n")
+
+	for _, stmt := range f.body {
+		out.WriteString(stmt.String())
+		out.WriteString("\n")
+	}
+
+	out.WriteString("NEXT")
 
 	return out.String()
 }

@@ -68,6 +68,7 @@ const (
 	SELECT = "SELECT"
 	CASE   = "CASE"
 	IS     = "IS"
+	STEP   = "STEP"
 )
 
 var keywords = map[string]TokenType{
@@ -83,6 +84,7 @@ var keywords = map[string]TokenType{
 	"NEXT":  NEXT,
 	"NOT":   NOT,
 	"MOD":   MOD,
+	"STEP":  STEP,
 
 	// WARN: Dangerous Territory
 	"GOTO":  GOTO,

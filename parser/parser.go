@@ -81,8 +81,8 @@ func (p *Parser) ParseStatement() Statement {
 		return Statement{kind: Input, inputStatement: p.parseInputStatement()}
 	case lexer.IF:
 		return Statement{kind: If, ifStatement: p.parseIfStatement()}
-	// case lexer.FOR:
-	// 	return Statement{kind: For, inputStatement: p.parseForStatement()}
+	case lexer.FOR:
+		return Statement{kind: For, forStatement: p.parseForStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}
