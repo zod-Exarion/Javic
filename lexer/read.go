@@ -34,7 +34,7 @@ func (lex *Lexer) peekNext() byte {
 }
 
 func isLetter(ch rune) bool {
-	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_'
+	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '!' && ch <= ')')
 }
 
 func isDigit(ch rune) bool {
@@ -44,7 +44,7 @@ func isDigit(ch rune) bool {
 func (lex *Lexer) readIdentifier() string {
 	initPos := lex.pos
 
-	for isLetter(lex.ch) {
+	for isLetter(lex.ch) || isDigit(lex.ch) {
 		lex.readNext()
 	}
 

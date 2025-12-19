@@ -67,6 +67,12 @@ func (s Statement) String() string {
 	case While:
 		return s.whileStatement.String()
 
+	case Dim:
+		return "DIM " + s.dimStatement.name + " AS " + s.dimStatement.datatype
+
+	case Redim:
+		return "REDIM " + s.redimStatement.name
+
 	default:
 		return "<unknown stmt>"
 	}

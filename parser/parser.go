@@ -32,6 +32,8 @@ const (
 	End
 	While
 	Rem
+	Dim
+	Redim
 )
 
 type Parser struct {
@@ -97,6 +99,10 @@ func (p *Parser) ParseStatement() Statement {
 		return Statement{kind: End, endStatement: p.parseEndStatement()}
 	case lexer.WHILE:
 		return Statement{kind: While, whileStatement: p.parseWhileStatement()}
+	case lexer.DIM:
+		return Statement{kind: Dim, dimStatement: p.parseDimStatement()}
+	case lexer.REDIM:
+		return Statement{kind: Redim, redimStatement: p.parseRedimStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}

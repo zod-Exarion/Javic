@@ -21,6 +21,8 @@ type Statement struct {
 	clsStatement   *ClsStatement
 	endStatement   *EndStatement
 	whileStatement *WhileStatement
+	dimStatement   *DimStatement
+	redimStatement *RedimStatement
 }
 
 // INFO: Here we define each and every statement
@@ -64,6 +66,15 @@ type (
 
 type RemStatement struct {
 	body string
+}
+
+type DimStatement struct {
+	name     string
+	datatype string
+}
+
+type RedimStatement struct {
+	name string
 }
 
 // INFO: Here we create functions to parse each and every statment
@@ -247,4 +258,25 @@ func (p *Parser) parseWhileStatement() *WhileStatement {
 	p.next() // consume WEND
 
 	return stmt
+}
+
+func (p *Parser) parseDimStatement() *DimStatement {
+	stmt := &DimStatement{}
+
+	p.next() // current token was 'DIM', skip over that to reach the var
+
+	stmt.name = p.cur.Lit
+
+	if p.peek.Type == lexer.AS {
+		p.next()
+		p.next()
+		stmt.datatype = p.cur.Lit
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseRedimStatement() *RedimStatement {
+	p.next() // current token was 'REDIM', skip over that to reach the var
+	return &RedimStatement{name: p.cur.Lit}
 }

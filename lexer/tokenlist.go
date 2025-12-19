@@ -43,31 +43,37 @@ const (
 	RPAREN    = ")"
 	NLINE     = "\\n"
 	DQUOTE    = `"`
-	STRING    = "STRING"
 
 	// DONE
-	LET   = "LET"
-	PRINT = "PRINT"
-	INPUT = "INPUT"
-	IF    = "IF"
-	THEN  = "THEN"
-	ELSE  = "ELSE"
-	END   = "END"
-	FOR   = "FOR"
-	TO    = "TO"
-	NEXT  = "NEXT"
-	STEP  = "STEP"
-	CLS   = "CLS"
-	WHILE = "WHILE"
-	WEND  = "WEND"
-	REM   = "REM"
-	NOT   = "NOT"
-	AND   = "AND"
-	OR    = "OR"
-	MOD   = "MOD"
+	LET     = "LET"
+	PRINT   = "PRINT"
+	INPUT   = "INPUT"
+	IF      = "IF"
+	THEN    = "THEN"
+	ELSE    = "ELSE"
+	END     = "END"
+	FOR     = "FOR"
+	TO      = "TO"
+	NEXT    = "NEXT"
+	STEP    = "STEP"
+	CLS     = "CLS"
+	WHILE   = "WHILE"
+	WEND    = "WEND"
+	REM     = "REM"
+	NOT     = "NOT"
+	AND     = "AND"
+	OR      = "OR"
+	MOD     = "MOD"
+	DIM     = "DIM"
+	REDIM   = "REDIM"
+	AS      = "AS"
+	INTEGER = "INTEGER"
+	LONG    = "LONG"
+	SINGLE  = "SINGLE"
+	DOUBLE  = "DOUBLE"
+	STRING  = "STRING"
 
 	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
-	DIM    = "DIM"
 	SELECT = "SELECT"
 	CASE   = "CASE"
 	IS     = "IS"
@@ -100,13 +106,16 @@ var keywords = map[string]TokenType{
 	"RETURN":   RETURN,
 	"WHILE":    WHILE,
 	"WEND":     WEND,
-	"DIM":      DIM,
 	"REM":      REM,
 	"FUNCTION": FUNCTION,
-
-	// "GOTO":  GOTO,
-	// "GOSUB": GOSUB,
-
+	"DIM":      DIM,
+	"REDIM":    REDIM,
+	"AS":       AS,
+	"INTEGER":  INTEGER,
+	"LONG":     LONG,
+	"SINGLE":   SINGLE,
+	"DOUBLE":   DOUBLE,
+	"STRING":   STRING,
 }
 
 var singleton = map[string]TokenType{
