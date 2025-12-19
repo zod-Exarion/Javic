@@ -109,7 +109,7 @@ func (p *Parser) expectToken(t lexer.TokenType) bool {
 		p.next()
 		return true
 	} else {
-		log.Fatalf("Expected token %v, got %v\n cur: %v\n ", t, p.peek.Type, p.cur.Type)
+		log.Fatalf("Expected token %v, got %v\n cur: [%v -> %v] \n ", t, p.peek.Type, p.cur.Type, p.cur.Lit)
 		return false
 	}
 }

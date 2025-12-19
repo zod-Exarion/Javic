@@ -76,11 +76,7 @@ func (i *IfStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("IF ")
-	out.WriteString(i.lhscondition.String())
-	out.WriteString(" ")
-	out.WriteString(i.comparison)
-	out.WriteString(" ")
-	out.WriteString(i.rhscondition.String())
+	out.WriteString(i.condition.String())
 	out.WriteString(" THEN\n")
 
 	for _, stmt := range i.consequence {
@@ -127,9 +123,7 @@ func (w *WhileStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("WHILE ")
-	out.WriteString(w.lhscondition.String())
-	out.WriteString(w.comparison)
-	out.WriteString(w.rhscondition.String() + "\n")
+	out.WriteString(w.condition.String() + "\n")
 	for _, stmt := range w.body {
 		out.WriteString(stmt.String())
 		out.WriteString("\n")

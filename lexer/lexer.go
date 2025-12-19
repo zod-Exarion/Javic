@@ -62,6 +62,9 @@ func (lex *Lexer) getToken() Token {
 		if lex.peekNext() == '>' {
 			tok.Type = NEQ
 			tok.Lit = lex.readString('>')
+		} else if lex.peekNext() == '=' {
+			tok.Type = LTE
+			tok.Lit = lex.readString('=')
 		} else {
 			tok = newToken(LT, lex.ch)
 		}
@@ -69,6 +72,9 @@ func (lex *Lexer) getToken() Token {
 		if lex.peekNext() == '<' {
 			tok.Type = NEQ
 			tok.Lit = lex.readString('<')
+		} else if lex.peekNext() == '=' {
+			tok.Type = GTE
+			tok.Lit = lex.readString('=')
 		} else {
 			tok = newToken(GT, lex.ch)
 		}
@@ -84,9 +90,19 @@ func (lex *Lexer) getToken() Token {
 			return tok
 		} else {
 			tok = newToken(checkSingleton(string(lex.ch)), lex.ch) // final case for operators
+			if tok.Type == ASSIGN {
+				if lex.peekNext() == '>' {
+					tok.Type = GTE
+					tok.Lit = lex.readString('>')
+				} else {
+					if lex.peekNext() == '<' {
+						tok.Type = LTE
+						tok.Lit = lex.readString('<')
+					}
+				}
+			}
 		}
 	}
-
 	lex.readNext()
 	return tok
 }

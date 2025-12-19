@@ -2,12 +2,37 @@ package parser
 
 import "github.com/zod-Exarion/javic/lexer"
 
+const (
+	LOWEST  = iota
+	OR      // OR
+	AND     // AND
+	EQUALS  // == <>
+	COMPARE //  <= >=
+	SUM     // + -
+	PRODUCT // * / ^
+	PREFIX  // NOT
+)
+
 // INFO: Here we define the precedence for all the operators to their respective numberical heirarchy
 var precedences = map[lexer.TokenType]int{
-	lexer.PLUS:     1,
-	lexer.MINUS:    1,
-	lexer.ASTERISK: 2,
-	lexer.SLASH:    2,
+	lexer.OR:  OR,
+	lexer.AND: AND,
+
+	lexer.ASSIGN: EQUALS,
+	lexer.NEQ:    EQUALS,
+
+	lexer.LT:  COMPARE,
+	lexer.GT:  COMPARE,
+	lexer.LTE: COMPARE,
+	lexer.GTE: COMPARE,
+
+	lexer.PLUS:  SUM,
+	lexer.MINUS: SUM,
+
+	lexer.ASTERISK: PRODUCT,
+	lexer.SLASH:    PRODUCT,
+	lexer.CARET:    PRODUCT,
+	lexer.MOD:      PRODUCT,
 }
 
 // INFO: return the precende of *Parser.peek

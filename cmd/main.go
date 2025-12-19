@@ -11,7 +11,8 @@ import (
 
 // INFO: Reads the file, tosses it to the lexer, tosses list of tokens to parser
 func main() {
-	if len(os.Args) < 2 {
+	argslength := len(os.Args)
+	if argslength < 2 {
 		log.Fatal("Usage: javic <file.bas>")
 	}
 
@@ -28,6 +29,9 @@ func main() {
 	}
 
 	tokens := lexer.Lex(string(content))
-	lexer.DisplayTokens(tokens)
+	if argslength >= 3 && os.Args[2] == "tokens" {
+		lexer.DisplayTokens(tokens)
+	}
+
 	parser.DisplayStatements(parser.Parse(tokens))
 }

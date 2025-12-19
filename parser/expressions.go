@@ -16,6 +16,9 @@ const (
 	String
 	Binary
 	Unary
+	And
+	Or
+	Not
 )
 
 // HACK: Same logic as Statement struct: interfaces too hard :( just create struct where only the respective
@@ -59,7 +62,7 @@ type UnaryExpression struct {
 func (p *Parser) parseExpression(prec int) Expression {
 	left := p.parsePrimary()
 
-	for p.peek.Type != lexer.NLINE && p.peekPrecedence() > prec {
+	for !p.expressionEnd() && p.peekPrecedence() > prec {
 		p.next() // skips to operator
 		op := p.cur.Lit
 
@@ -93,6 +96,8 @@ func (p *Parser) parsePrimary() Expression {
 		return p.parseGroupedExpression()
 	case lexer.STRING:
 		return Expression{kind: String, stringExpression: p.cur.Lit}
+	case lexer.NOT:
+		return p.parseNotExpression()
 	default:
 		log.Fatal("Unrecognized expression")
 		return Expression{} // unrecognizable expression, doesnt get added in the final list of expressions
@@ -108,4 +113,29 @@ func (p *Parser) parseGroupedExpression() Expression {
 
 	// p.next() // consumes ')' // WARN: If we skip to next, creates parser off by one error
 	return expr
+}
+
+func (p *Parser) parseNotExpression() Expression {
+	p.next()
+	expr := p.parseExpression(PREFIX)
+	return Expression{
+		kind: Unary,
+		unaryExpression: &UnaryExpression{
+			op:         "NOT",
+			expression: expr,
+		},
+	}
+}
+
+func (p *Parser) expressionEnd() bool {
+	switch p.peek.Type {
+	case lexer.THEN,
+		lexer.ELSE,
+		lexer.WEND,
+		lexer.END,
+		// lexer.NLINE, removed for while parsing issues
+		lexer.EOF:
+		return true
+	}
+	return false
 }

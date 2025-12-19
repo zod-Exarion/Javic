@@ -39,11 +39,9 @@ type InputStatement struct {
 }
 
 type IfStatement struct {
-	lhscondition Expression
-	rhscondition Expression
-	comparison   string
-	consequence  []Statement
-	antecendent  []Statement
+	condition   Expression
+	consequence []Statement
+	antecendent []Statement
 }
 
 type ForStatement struct {
@@ -54,6 +52,11 @@ type ForStatement struct {
 	body  []Statement
 }
 
+type WhileStatement struct {
+	condition Expression
+	body      []Statement
+}
+
 type (
 	ClsStatement struct{}
 	EndStatement struct{}
@@ -61,13 +64,6 @@ type (
 
 type RemStatement struct {
 	body string
-}
-
-type WhileStatement struct {
-	lhscondition Expression
-	comparison   string
-	rhscondition Expression
-	body         []Statement
 }
 
 // INFO: Here we create functions to parse each and every statment
@@ -135,13 +131,8 @@ func (p *Parser) parseInputStatement() *InputStatement {
 func (p *Parser) parseIfStatement() *IfStatement {
 	stmt := &IfStatement{}
 	p.next() // Current was IF
-	stmt.lhscondition = p.parseExpression(0)
 
-	p.next()
-	stmt.comparison = p.parseComparisonOperator()
-
-	p.next()
-	stmt.rhscondition = p.parseExpression(0)
+	stmt.condition = p.parseExpression(0)
 
 	p.expectToken(lexer.THEN) // expect THEN
 	p.next()
@@ -173,31 +164,6 @@ func (p *Parser) parseIfStatement() *IfStatement {
 	p.next() // consume END IF
 
 	return stmt
-}
-
-func (p *Parser) parseComparisonOperator() string {
-	if p.cur.Type != lexer.LT &&
-		p.cur.Type != lexer.GT &&
-		p.cur.Type != lexer.ASSIGN {
-		log.Fatalf("expected comparison operator, got %v", p.cur.Type)
-	}
-
-	op := p.cur.Lit
-
-	// Lookahead for <= >= <>
-	if p.peek.Type == lexer.ASSIGN || p.peek.Type == lexer.GT {
-		p.next()
-		op += p.cur.Lit
-	}
-
-	switch op {
-	case "=", "<", ">", "<=", ">=", "<>":
-		return op
-	default:
-		log.Fatalf("invalid QBASIC comparison operator: %s", op)
-	}
-
-	return ""
 }
 
 func (p *Parser) parseForStatement() *ForStatement {
@@ -265,23 +231,20 @@ func (p *Parser) parseWhileStatement() *WhileStatement {
 	WEND*/
 
 	p.next() // Current was WHILE
-	stmt.lhscondition = p.parseExpression(0)
 
-	p.next()
-	stmt.comparison = p.parseComparisonOperator()
-
-	p.next()
-	stmt.rhscondition = p.parseExpression(0)
-	p.next()
+	stmt.condition = p.parseExpression(0)
+	p.next() // skip past expression
 
 	p.skipNewlines()
 
-	for p.cur.Type != lexer.WEND {
+	for p.cur.Type != lexer.WEND && p.cur.Type != lexer.EOF {
 		if p.cur.Type != lexer.NLINE {
 			stmt.body = append(stmt.body, p.ParseStatement())
 		}
 		p.next()
 	}
+
+	p.next() // consume WEND
 
 	return stmt
 }

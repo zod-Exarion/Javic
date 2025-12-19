@@ -1,23 +1,3 @@
-CLS 
-
-REM hahaha evil text 
-FOR I = 1 TO 10
-PRINT I
-
-PRINT "BAHAHAHHA"
-
-PRINT HEHE
-
-INPUT "ur mom", HEHE 
-NEXT 
-END
-print wow 
-
-CLS
-INPUT "enter any number";n
-i=1
-WHILE i<=n
+WHILE  i <= n AND NOT X <= Y AND Z MOD 2 >= X ^ 78
     print hi; i, s ; "ur mom again"
 WEND
-PRINT "Sum is";s
-END

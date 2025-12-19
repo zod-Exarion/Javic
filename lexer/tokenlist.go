@@ -28,6 +28,8 @@ const (
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
+	LTE      = "<="
+	GTE      = ">="
 	NEQ      = "<>"
 	EX       = "!"
 	POUND    = "$"
@@ -59,10 +61,12 @@ const (
 	WHILE = "WHILE"
 	WEND  = "WEND"
 	REM   = "REM"
+	NOT   = "NOT"
+	AND   = "AND"
+	OR    = "OR"
+	MOD   = "MOD"
 
 	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
-	MOD    = "MOD"
-	NOT    = "NOT"
 	DIM    = "DIM"
 	SELECT = "SELECT"
 	CASE   = "CASE"
@@ -89,6 +93,8 @@ var keywords = map[string]TokenType{
 	"TO":       TO,
 	"NEXT":     NEXT,
 	"NOT":      NOT,
+	"AND":      AND,
+	"OR":       OR,
 	"MOD":      MOD,
 	"STEP":     STEP,
 	"RETURN":   RETURN,
