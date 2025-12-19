@@ -14,10 +14,10 @@ END
 print wow 
 
 CLS
-INPUT "enter any number",n
+INPUT "enter any number";n
 i=1
 WHILE i<=n
-    print hi, i, s , "ur mom again"
+    print hi; i, s ; "ur mom again"
 WEND
-PRINT "Sum is",s
+PRINT "Sum is";s
 END

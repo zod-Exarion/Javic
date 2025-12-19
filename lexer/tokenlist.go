@@ -40,12 +40,9 @@ const (
 	LPAREN    = "("
 	RPAREN    = ")"
 	NLINE     = "\\n"
+	DQUOTE    = `"`
+	STRING    = "STRING"
 
-	// String
-	DQUOTE = `"`
-	STRING = "STRING"
-
-	// Keywords (common in QBASIC)
 	// DONE
 	LET   = "LET"
 	PRINT = "PRINT"
@@ -59,14 +56,14 @@ const (
 	NEXT  = "NEXT"
 	STEP  = "STEP"
 	CLS   = "CLS"
+	WHILE = "WHILE"
+	WEND  = "WEND"
+	REM   = "REM"
 
 	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
 	MOD    = "MOD"
 	NOT    = "NOT"
-	WHILE  = "WHILE"
-	WEND   = "WEND"
 	DIM    = "DIM"
-	REM    = "REM" // comment
 	SELECT = "SELECT"
 	CASE   = "CASE"
 	IS     = "IS"

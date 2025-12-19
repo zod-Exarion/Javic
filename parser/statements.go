@@ -104,7 +104,7 @@ func (p *Parser) parsePrintStatement() *PrintStatement {
 
 	stmt.value = append(stmt.value, p.parseExpression(0))
 
-	for p.peek.Type == lexer.COMMA {
+	for p.peek.Type == lexer.COMMA || p.peek.Type == lexer.SEMICOLON {
 		p.next()
 		p.next()
 		stmt.value = append(stmt.value, p.parseExpression(0))
@@ -118,7 +118,11 @@ func (p *Parser) parseInputStatement() *InputStatement {
 
 	prompt := p.cur.Lit
 
-	p.expectToken(lexer.COMMA) // except a ,
+	if p.peek.Type == lexer.COMMA || p.peek.Type == lexer.SEMICOLON {
+		p.next()
+	} else {
+		log.Fatalf("expected comma or semicolon, got %v", p.cur.Type)
+	}
 
 	p.expectToken(lexer.IDENT) // expect identifier
 
