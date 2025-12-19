@@ -41,11 +41,13 @@ func (e Expression) String() string {
 
 func (s Statement) String() string {
 	switch s.kind {
+	case Rem:
+		return "REM " + s.remStatement.body
 	case Let:
 		return "LET " + s.letStatement.name + " = " + s.letStatement.value.String()
 
 	case Print:
-		return "PRINT " + s.printStatement.value.String()
+		return s.printStatement.String()
 
 	case Input:
 		return "INPUT " + s.inputStatement.prompt + " , " + s.inputStatement.name
@@ -61,6 +63,9 @@ func (s Statement) String() string {
 
 	case End:
 		return "END"
+
+	case While:
+		return s.whileStatement.String()
 
 	default:
 		return "<unknown stmt>"
@@ -114,6 +119,34 @@ func (f *ForStatement) String() string {
 	}
 
 	out.WriteString("NEXT")
+
+	return out.String()
+}
+
+func (w *WhileStatement) String() string {
+	var out strings.Builder
+
+	out.WriteString("WHILE ")
+	out.WriteString(w.lhscondition.String())
+	out.WriteString(w.comparison)
+	out.WriteString(w.rhscondition.String() + "\n")
+	for _, stmt := range w.body {
+		out.WriteString(stmt.String())
+		out.WriteString("\n")
+	}
+	out.WriteString("WEND")
+
+	return out.String()
+}
+
+func (p *PrintStatement) String() string {
+	var out strings.Builder
+
+	out.WriteString("PRINT ")
+	for _, expr := range p.value {
+		out.WriteString(expr.String())
+		out.WriteString(", ")
+	}
 
 	return out.String()
 }

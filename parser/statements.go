@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/zod-Exarion/javic/lexer"
@@ -13,6 +12,7 @@ type StatementType int // for the ease of the developer, wrapper of int
 type Statement struct {
 	kind StatementType
 
+	remStatement   *RemStatement
 	letStatement   *LetStatement
 	printStatement *PrintStatement
 	inputStatement *InputStatement
@@ -20,6 +20,7 @@ type Statement struct {
 	forStatement   *ForStatement
 	clsStatement   *ClsStatement
 	endStatement   *EndStatement
+	whileStatement *WhileStatement
 }
 
 // INFO: Here we define each and every statement
@@ -29,7 +30,7 @@ type LetStatement struct {
 }
 
 type PrintStatement struct {
-	value Expression
+	value []Expression
 }
 
 type InputStatement struct {
@@ -58,9 +59,33 @@ type (
 	EndStatement struct{}
 )
 
+type RemStatement struct {
+	body string
+}
+
+type WhileStatement struct {
+	lhscondition Expression
+	comparison   string
+	rhscondition Expression
+	body         []Statement
+}
+
 // INFO: Here we create functions to parse each and every statment
+
+func (p *Parser) parseRemStatement() *RemStatement {
+	var body string
+	for p.peek.Type != lexer.NLINE {
+		p.next()
+		body += string(p.cur.Lit) + " " // Stringify the token until we hit newline
+	}
+
+	return &RemStatement{body: body}
+}
+
 func (p *Parser) parseLetStatement() *LetStatement {
-	p.expectToken(lexer.IDENT) // expect identifier
+	if p.cur.Type != lexer.IDENT {
+		p.expectToken(lexer.IDENT) // expect identifier
+	}
 
 	name := p.cur.Lit
 
@@ -74,11 +99,18 @@ func (p *Parser) parseLetStatement() *LetStatement {
 }
 
 func (p *Parser) parsePrintStatement() *PrintStatement {
+	stmt := &PrintStatement{}
 	p.next() // current token was 'PRINT', skip over that to reach the expression
 
-	value := p.parseExpression(0)
+	stmt.value = append(stmt.value, p.parseExpression(0))
 
-	return &PrintStatement{value: value}
+	for p.peek.Type == lexer.COMMA {
+		p.next()
+		p.next()
+		stmt.value = append(stmt.value, p.parseExpression(0))
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseInputStatement() *InputStatement {
@@ -198,7 +230,7 @@ func (p *Parser) parseForStatement() *ForStatement {
 		p.next()
 	}
 
-	p.next() // consume NEXT
+	// p.next() // consume NEXT
 
 	if p.cur.Type == lexer.IDENT {
 		p.next()
@@ -216,9 +248,36 @@ func (p *Parser) parseClsStatement() *ClsStatement {
 }
 
 func (p *Parser) parseEndStatement() *EndStatement {
-	fmt.Printf("entered parseEndStatement:  %v\n", p.cur.Type)
 	p.next()
-	fmt.Printf("exited parseEndStatement:  %v\n", p.cur.Type)
 
 	return &EndStatement{}
+}
+
+func (p *Parser) parseWhileStatement() *WhileStatement {
+	stmt := &WhileStatement{}
+	/*WHILE i<=n
+		s=s+i
+		i=i+1
+	WEND*/
+
+	p.next() // Current was WHILE
+	stmt.lhscondition = p.parseExpression(0)
+
+	p.next()
+	stmt.comparison = p.parseComparisonOperator()
+
+	p.next()
+	stmt.rhscondition = p.parseExpression(0)
+	p.next()
+
+	p.skipNewlines()
+
+	for p.cur.Type != lexer.WEND {
+		if p.cur.Type != lexer.NLINE {
+			stmt.body = append(stmt.body, p.ParseStatement())
+		}
+		p.next()
+	}
+
+	return stmt
 }

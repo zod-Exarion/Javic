@@ -45,4 +45,5 @@ func DisplayTokens(toks []Token) {
 			fmt.Printf("[%v -> %v] ", tok.Type, tok.Lit)
 		}
 	}
+	fmt.Println("\n\n\n")
 }

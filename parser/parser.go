@@ -30,6 +30,8 @@ const (
 	For
 	Cls
 	End
+	While
+	Rem
 )
 
 type Parser struct {
@@ -75,6 +77,10 @@ func (p *Parser) next() {
 func (p *Parser) ParseStatement() Statement {
 	// p.skipNewlines()
 	switch p.cur.Type {
+	case lexer.REM:
+		return Statement{kind: Rem, remStatement: p.parseRemStatement()}
+	case lexer.IDENT:
+		return Statement{kind: Let, letStatement: p.parseLetStatement()}
 	case lexer.LET:
 		return Statement{kind: Let, letStatement: p.parseLetStatement()}
 	case lexer.PRINT:
@@ -89,6 +95,8 @@ func (p *Parser) ParseStatement() Statement {
 		return Statement{kind: Cls, clsStatement: p.parseClsStatement()}
 	case lexer.END:
 		return Statement{kind: End, endStatement: p.parseEndStatement()}
+	case lexer.WHILE:
+		return Statement{kind: While, whileStatement: p.parseWhileStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}
@@ -101,7 +109,7 @@ func (p *Parser) expectToken(t lexer.TokenType) bool {
 		p.next()
 		return true
 	} else {
-		log.Fatalf("Expected token %v, got %v", t, p.peek.Type)
+		log.Fatalf("Expected token %v, got %v\n cur: %v\n ", t, p.peek.Type, p.cur.Type)
 		return false
 	}
 }
