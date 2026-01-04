@@ -2,7 +2,6 @@ Dim groceryList(100) As String
 Dim itemCount As Integer
 itemCount = 0
 
-Do
     Cls
     Print "=== Grocery List Maker ==="
     Print
@@ -48,7 +47,8 @@ Do
             End If
         Case 3
             Print "Exiting..."
-            Exit Do
+        END
+            
         Case Else
             Print "Invalid choice. Try again."
     End Select
@@ -57,6 +57,5 @@ Do
     Print "Press any key to continue..."
     Sleep
 
-Loop
 
 Print "succesfully executed the qbasic program"

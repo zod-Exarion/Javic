@@ -34,6 +34,7 @@ const (
 	Rem
 	Dim
 	Redim
+	Select
 )
 
 type Parser struct {
@@ -103,6 +104,8 @@ func (p *Parser) ParseStatement() Statement {
 		return Statement{kind: Dim, dimStatement: p.parseDimStatement()}
 	case lexer.REDIM:
 		return Statement{kind: Redim, redimStatement: p.parseRedimStatement()}
+	case lexer.SELECT:
+		return Statement{kind: Select, selectStatement: p.parseSelectStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}

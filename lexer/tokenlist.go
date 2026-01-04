@@ -76,7 +76,6 @@ const (
 	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
 	SELECT = "SELECT"
 	CASE   = "CASE"
-	IS     = "IS"
 
 	// I dont really know if I want to
 	FUNCTION = "FUNCTION"
@@ -116,6 +115,8 @@ var keywords = map[string]TokenType{
 	"SINGLE":   SINGLE,
 	"DOUBLE":   DOUBLE,
 	"STRING":   STRING,
+	"SELECT":   SELECT,
+	"CASE":     CASE,
 }
 
 var singleton = map[string]TokenType{

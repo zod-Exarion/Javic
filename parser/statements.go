@@ -12,17 +12,18 @@ type StatementType int // for the ease of the developer, wrapper of int
 type Statement struct {
 	kind StatementType
 
-	remStatement   *RemStatement
-	letStatement   *LetStatement
-	printStatement *PrintStatement
-	inputStatement *InputStatement
-	ifStatement    *IfStatement
-	forStatement   *ForStatement
-	clsStatement   *ClsStatement
-	endStatement   *EndStatement
-	whileStatement *WhileStatement
-	dimStatement   *DimStatement
-	redimStatement *RedimStatement
+	remStatement    *RemStatement
+	letStatement    *LetStatement
+	printStatement  *PrintStatement
+	inputStatement  *InputStatement
+	ifStatement     *IfStatement
+	forStatement    *ForStatement
+	clsStatement    *ClsStatement
+	endStatement    *EndStatement
+	whileStatement  *WhileStatement
+	dimStatement    *DimStatement
+	redimStatement  *RedimStatement
+	selectStatement *SelectStatement
 }
 
 // INFO: Here we define each and every statement
@@ -77,6 +78,17 @@ type RedimStatement struct {
 	name string
 }
 
+type SelectStatement struct {
+	match       Expression
+	cases       []*CasePhrase
+	defaultcase []Statement
+}
+
+type CasePhrase struct {
+	value Expression
+	body  []Statement
+}
+
 // INFO: Here we create functions to parse each and every statment
 
 func (p *Parser) parseRemStatement() *RemStatement {
@@ -121,14 +133,15 @@ func (p *Parser) parsePrintStatement() *PrintStatement {
 }
 
 func (p *Parser) parseInputStatement() *InputStatement {
-	p.expectToken(lexer.STRING) // expect string
-
-	prompt := p.cur.Lit
-
-	if p.peek.Type == lexer.COMMA || p.peek.Type == lexer.SEMICOLON {
+	var prompt string
+	if p.peek.Type == lexer.STRING {
 		p.next()
-	} else {
-		log.Fatalf("expected comma or semicolon, got %v", p.cur.Type)
+		prompt = p.cur.Lit
+		if p.peek.Type == lexer.COMMA || p.peek.Type == lexer.SEMICOLON {
+			p.next()
+		} else {
+			log.Fatalf("expected comma or semicolon, got %v", p.cur.Type)
+		}
 	}
 
 	p.expectToken(lexer.IDENT) // expect identifier
@@ -279,4 +292,73 @@ func (p *Parser) parseDimStatement() *DimStatement {
 func (p *Parser) parseRedimStatement() *RedimStatement {
 	p.next() // current token was 'REDIM', skip over that to reach the var
 	return &RedimStatement{name: p.cur.Lit}
+}
+
+func (p *Parser) parseSelectStatement() *SelectStatement {
+	stmt := &SelectStatement{}
+
+	p.expectToken(lexer.CASE)
+
+	p.next()
+	stmt.match = p.parseExpression(LOWEST)
+
+	p.next()
+
+	p.skipNewlines()
+
+	if p.peek.Type == lexer.COMMA {
+		log.Fatalf("only single equality checks are allowed, got %v", p.cur.Type)
+	}
+
+	for p.cur.Type == lexer.CASE {
+		p.next()
+
+		// CASE ELSE
+		if p.cur.Type == lexer.ELSE {
+			p.next()
+			stmt.defaultcase = p.parseCaseBlock()
+			break
+		}
+
+		// CASE <single expression>
+		clause := CasePhrase{
+			value: p.parseExpression(LOWEST),
+		}
+
+		clause.body = p.parseCaseBlock()
+
+		stmt.cases = append(stmt.cases, &clause)
+	}
+
+	p.skipNewlines()
+
+	// END SELECT
+	if p.cur.Type == lexer.END && p.peek.Type == lexer.SELECT {
+		p.next()
+		p.next()
+		return stmt
+	}
+
+	log.Fatalf("expected END SELECT, got %v and %v", p.cur.Type, p.peek.Lit)
+	return nil
+}
+
+func (p *Parser) parseCaseBlock() []Statement {
+	var body []Statement
+
+	p.next()
+
+	p.skipNewlines()
+
+	for p.cur.Type != lexer.CASE &&
+		p.cur.Type != lexer.END && p.cur.Type != lexer.SELECT {
+		if p.cur.Type != lexer.NLINE {
+			body = append(body, p.ParseStatement())
+		}
+		p.next()
+	}
+
+	p.skipNewlines()
+
+	return body
 }

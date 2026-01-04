@@ -73,6 +73,9 @@ func (s Statement) String() string {
 	case Redim:
 		return "REDIM " + s.redimStatement.name
 
+	case Select:
+		return s.selectStatement.String()
+
 	default:
 		return "<unknown stmt>"
 	}
@@ -136,6 +139,37 @@ func (w *WhileStatement) String() string {
 	}
 	out.WriteString("WEND")
 
+	return out.String()
+}
+
+func (s *SelectStatement) String() string {
+	var out strings.Builder
+
+	out.WriteString("SELECT CASE ")
+	out.WriteString(s.match.String())
+	out.WriteString("\n")
+
+	for _, c := range s.cases {
+		out.WriteString("CASE ")
+		out.WriteString(c.value.String())
+		out.WriteString("\n")
+		for _, stmt := range c.body {
+			out.WriteString("  ")
+			out.WriteString(stmt.String())
+			out.WriteString("\n")
+		}
+	}
+
+	if s.defaultcase != nil {
+		out.WriteString("CASE ELSE\n")
+		for _, stmt := range s.defaultcase {
+			out.WriteString("  ")
+			out.WriteString(stmt.String())
+			out.WriteString("\n")
+		}
+	}
+
+	out.WriteString("END SELECT")
 	return out.String()
 }
 
