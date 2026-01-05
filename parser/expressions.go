@@ -3,6 +3,7 @@ package parser
 import (
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/zod-Exarion/javic/lexer"
 )
@@ -12,6 +13,7 @@ type ExpressionType int // another wrapper around int for the ease of the develo
 // constant wrappers for the ease of the developer
 const (
 	Number StatementType = iota
+	Decimal
 	Ident
 	String
 	Binary
@@ -24,25 +26,26 @@ const (
 // HACK: Same logic as Statement struct: interfaces too hard :( just create struct where only the respective
 // (detected expression type's respective field) is non-nil
 type Expression struct {
-	kind StatementType
+	Kind StatementType
 
-	numberExpression int64
-	identExpression  string
-	stringExpression string
-	binaryExpression *BinaryExpression
-	unaryExpression  *UnaryExpression
+	NumberExpression  int64
+	DecimalExpression float64
+	IdentExpression   string
+	StringExpression  string
+	BinaryExpression  *BinaryExpression
+	UnaryExpression   *UnaryExpression
 }
 
 // INFO: Here we define the expressions
 type BinaryExpression struct {
-	left  Expression
-	op    string
-	right Expression
+	Left  Expression
+	Op    string
+	Right Expression
 }
 
 type UnaryExpression struct {
-	op         string
-	expression Expression
+	Op         string
+	Expression Expression
 }
 
 // INFO: Here we define the functions to parse the expressions
@@ -72,11 +75,11 @@ func (p *Parser) parseExpression(prec int) Expression {
 		right := p.parseExpression(currPrec)
 
 		left = Expression{
-			kind: Binary,
-			binaryExpression: &BinaryExpression{
-				left:  left,
-				op:    op,
-				right: right,
+			Kind: Binary,
+			BinaryExpression: &BinaryExpression{
+				Left:  left,
+				Op:    op,
+				Right: right,
 			},
 		}
 	}
@@ -88,14 +91,27 @@ func (p *Parser) parseExpression(prec int) Expression {
 func (p *Parser) parsePrimary() Expression {
 	switch p.cur.Type {
 	case lexer.NUMBER:
-		n, _ := strconv.ParseInt(p.cur.Lit, 10, 64) // converts string to number
-		return Expression{kind: Number, numberExpression: n}
+		if strings.Contains(p.cur.Lit, ".") {
+			f, err := strconv.ParseFloat(p.cur.Lit, 64)
+			if err != nil {
+				log.Fatalf("Invalid decimal literal: %s", p.cur.Lit)
+			}
+			return Expression{Kind: Decimal, DecimalExpression: f}
+		}
+
+		i, err := strconv.ParseInt(p.cur.Lit, 10, 64)
+		if err != nil {
+			log.Fatalf("Invalid integer literal: %s", p.cur.Lit)
+		}
+
+		return Expression{Kind: Number, NumberExpression: i}
+
 	case lexer.IDENT:
-		return Expression{kind: Ident, identExpression: p.cur.Lit} // simply return identifier
+		return Expression{Kind: Ident, IdentExpression: p.cur.Lit} // simply return identifier
 	case lexer.LPAREN:
 		return p.parseGroupedExpression()
 	case lexer.STRING:
-		return Expression{kind: String, stringExpression: p.cur.Lit}
+		return Expression{Kind: String, StringExpression: p.cur.Lit}
 	case lexer.NOT:
 		return p.parseNotExpression()
 	default:
@@ -119,10 +135,10 @@ func (p *Parser) parseNotExpression() Expression {
 	p.next()
 	expr := p.parseExpression(PREFIX)
 	return Expression{
-		kind: Unary,
-		unaryExpression: &UnaryExpression{
-			op:         "NOT",
-			expression: expr,
+		Kind: Unary,
+		UnaryExpression: &UnaryExpression{
+			Op:         "NOT",
+			Expression: expr,
 		},
 	}
 }

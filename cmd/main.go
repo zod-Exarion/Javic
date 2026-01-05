@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/zod-Exarion/javic/emitter"
 	"github.com/zod-Exarion/javic/lexer"
 	"github.com/zod-Exarion/javic/parser"
 )
@@ -33,5 +34,12 @@ func main() {
 		lexer.DisplayTokens(tokens)
 	}
 
-	parser.DisplayStatements(parser.Parse(tokens))
+	statements := parser.Parse(tokens)
+	if argslength >= 4 && os.Args[3] == "ast" {
+		parser.DisplayStatements(statements)
+	}
+
+	result := emitter.Emit(statements)
+
+	fmt.Println(result)
 }

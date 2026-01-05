@@ -10,54 +10,54 @@ type StatementType int // for the ease of the developer, wrapper of int
 
 // HACK: My small brain too stupid for interfaces, just have a struct where only the proper field is non-nil
 type Statement struct {
-	kind StatementType
+	Kind StatementType
 
-	remStatement    *RemStatement
-	letStatement    *LetStatement
-	printStatement  *PrintStatement
-	inputStatement  *InputStatement
-	ifStatement     *IfStatement
-	forStatement    *ForStatement
-	clsStatement    *ClsStatement
-	endStatement    *EndStatement
-	whileStatement  *WhileStatement
-	dimStatement    *DimStatement
-	redimStatement  *RedimStatement
-	selectStatement *SelectStatement
+	RemStatement    *RemStatement
+	LetStatement    *LetStatement
+	PrintStatement  *PrintStatement
+	InputStatement  *InputStatement
+	IfStatement     *IfStatement
+	ForStatement    *ForStatement
+	ClsStatement    *ClsStatement
+	EndStatement    *EndStatement
+	WhileStatement  *WhileStatement
+	DimStatement    *DimStatement
+	RedimStatement  *RedimStatement
+	SelectStatement *SelectStatement
 }
 
 // INFO: Here we define each and every statement
 type LetStatement struct {
-	name  string
-	value Expression
+	Name  string
+	Value Expression
 }
 
 type PrintStatement struct {
-	value []Expression
+	Value []Expression
 }
 
 type InputStatement struct {
-	prompt string
-	name   string
+	Prompt string
+	Name   string
 }
 
 type IfStatement struct {
-	condition   Expression
-	consequence []Statement
-	antecendent []Statement
+	Condition   Expression
+	Consequence []Statement
+	Antecendent []Statement
 }
 
 type ForStatement struct {
-	name  string
-	init  Expression
-	final Expression
-	step  Expression
-	body  []Statement
+	Name  string
+	Init  Expression
+	Final Expression
+	Step  Expression
+	Body  []Statement
 }
 
 type WhileStatement struct {
-	condition Expression
-	body      []Statement
+	Condition Expression
+	Body      []Statement
 }
 
 type (
@@ -66,27 +66,27 @@ type (
 )
 
 type RemStatement struct {
-	body string
+	Body string
 }
 
 type DimStatement struct {
-	name     string
-	datatype string
+	Name     string
+	Datatype string
 }
 
 type RedimStatement struct {
-	name string
+	Name string
 }
 
 type SelectStatement struct {
-	match       Expression
-	cases       []*CasePhrase
-	defaultcase []Statement
+	Match       Expression
+	Cases       []*CasePhrase
+	Defaultcase []Statement
 }
 
 type CasePhrase struct {
-	value Expression
-	body  []Statement
+	Value Expression
+	Body  []Statement
 }
 
 // INFO: Here we create functions to parse each and every statment
@@ -98,7 +98,7 @@ func (p *Parser) parseRemStatement() *RemStatement {
 		body += string(p.cur.Lit) + " " // Stringify the token until we hit newline
 	}
 
-	return &RemStatement{body: body}
+	return &RemStatement{Body: body}
 }
 
 func (p *Parser) parseLetStatement() *LetStatement {
@@ -114,19 +114,19 @@ func (p *Parser) parseLetStatement() *LetStatement {
 
 	value := p.parseExpression(0)
 
-	return &LetStatement{name: name, value: value}
+	return &LetStatement{Name: name, Value: value}
 }
 
 func (p *Parser) parsePrintStatement() *PrintStatement {
 	stmt := &PrintStatement{}
 	p.next() // current token was 'PRINT', skip over that to reach the expression
 
-	stmt.value = append(stmt.value, p.parseExpression(0))
+	stmt.Value = append(stmt.Value, p.parseExpression(0))
 
 	for p.peek.Type == lexer.COMMA || p.peek.Type == lexer.SEMICOLON {
 		p.next()
 		p.next()
-		stmt.value = append(stmt.value, p.parseExpression(0))
+		stmt.Value = append(stmt.Value, p.parseExpression(0))
 	}
 
 	return stmt
@@ -149,14 +149,14 @@ func (p *Parser) parseInputStatement() *InputStatement {
 	name := p.cur.Lit
 	// p.next()
 
-	return &InputStatement{prompt: prompt, name: name}
+	return &InputStatement{Prompt: prompt, Name: name}
 }
 
 func (p *Parser) parseIfStatement() *IfStatement {
 	stmt := &IfStatement{}
 	p.next() // Current was IF
 
-	stmt.condition = p.parseExpression(0)
+	stmt.Condition = p.parseExpression(0)
 
 	p.expectToken(lexer.THEN) // expect THEN
 	p.next()
@@ -166,7 +166,7 @@ func (p *Parser) parseIfStatement() *IfStatement {
 		!(p.cur.Type == lexer.END && p.peek.Type == lexer.IF) {
 
 		if p.cur.Type != lexer.NLINE {
-			stmt.consequence = append(stmt.consequence, p.ParseStatement())
+			stmt.Consequence = append(stmt.Consequence, p.ParseStatement())
 		}
 		p.next()
 	}
@@ -178,7 +178,7 @@ func (p *Parser) parseIfStatement() *IfStatement {
 		for !(p.cur.Type == lexer.END && p.peek.Type == lexer.IF) {
 
 			if p.cur.Type != lexer.NLINE {
-				stmt.antecendent = append(stmt.antecendent, p.ParseStatement())
+				stmt.Antecendent = append(stmt.Antecendent, p.ParseStatement())
 			}
 			p.next()
 		}
@@ -198,28 +198,28 @@ func (p *Parser) parseForStatement() *ForStatement {
 	*/
 	stmt := &ForStatement{}
 	p.expectToken(lexer.IDENT) // expect identifier
-	stmt.name = p.cur.Lit
+	stmt.Name = p.cur.Lit
 	p.expectToken(lexer.ASSIGN) // expect =
 	p.next()                    // start of expression
-	stmt.init = p.parseExpression(0)
+	stmt.Init = p.parseExpression(0)
 	p.expectToken(lexer.TO) // expect TO
 	p.next()                // start of expression
-	stmt.final = p.parseExpression(0)
+	stmt.Final = p.parseExpression(0)
 	p.next() // end the expression
 
 	if p.cur.Type == lexer.STEP {
 		p.next()
-		stmt.step = p.parseExpression(0)
+		stmt.Step = p.parseExpression(0)
 		p.next() // cosume number
 	} else {
-		stmt.step = Expression{kind: Number, numberExpression: 1}
+		stmt.Step = Expression{Kind: Number, NumberExpression: 1}
 	}
 
 	p.skipNewlines()
 
 	for p.cur.Type != lexer.NEXT {
 		if p.cur.Type != lexer.NLINE {
-			stmt.body = append(stmt.body, p.ParseStatement())
+			stmt.Body = append(stmt.Body, p.ParseStatement())
 		}
 		p.next()
 	}
@@ -256,14 +256,14 @@ func (p *Parser) parseWhileStatement() *WhileStatement {
 
 	p.next() // Current was WHILE
 
-	stmt.condition = p.parseExpression(0)
+	stmt.Condition = p.parseExpression(0)
 	p.next() // skip past expression
 
 	p.skipNewlines()
 
 	for p.cur.Type != lexer.WEND && p.cur.Type != lexer.EOF {
 		if p.cur.Type != lexer.NLINE {
-			stmt.body = append(stmt.body, p.ParseStatement())
+			stmt.Body = append(stmt.Body, p.ParseStatement())
 		}
 		p.next()
 	}
@@ -278,12 +278,12 @@ func (p *Parser) parseDimStatement() *DimStatement {
 
 	p.next() // current token was 'DIM', skip over that to reach the var
 
-	stmt.name = p.cur.Lit
+	stmt.Name = p.cur.Lit
 
 	if p.peek.Type == lexer.AS {
 		p.next()
 		p.next()
-		stmt.datatype = p.cur.Lit
+		stmt.Datatype = p.cur.Lit
 	}
 
 	return stmt
@@ -291,7 +291,7 @@ func (p *Parser) parseDimStatement() *DimStatement {
 
 func (p *Parser) parseRedimStatement() *RedimStatement {
 	p.next() // current token was 'REDIM', skip over that to reach the var
-	return &RedimStatement{name: p.cur.Lit}
+	return &RedimStatement{Name: p.cur.Lit}
 }
 
 func (p *Parser) parseSelectStatement() *SelectStatement {
@@ -300,7 +300,7 @@ func (p *Parser) parseSelectStatement() *SelectStatement {
 	p.expectToken(lexer.CASE)
 
 	p.next()
-	stmt.match = p.parseExpression(LOWEST)
+	stmt.Match = p.parseExpression(LOWEST)
 
 	p.next()
 
@@ -316,18 +316,18 @@ func (p *Parser) parseSelectStatement() *SelectStatement {
 		// CASE ELSE
 		if p.cur.Type == lexer.ELSE {
 			p.next()
-			stmt.defaultcase = p.parseCaseBlock()
+			stmt.Defaultcase = p.parseCaseBlock()
 			break
 		}
 
 		// CASE <single expression>
 		clause := CasePhrase{
-			value: p.parseExpression(LOWEST),
+			Value: p.parseExpression(LOWEST),
 		}
 
-		clause.body = p.parseCaseBlock()
+		clause.Body = p.parseCaseBlock()
 
-		stmt.cases = append(stmt.cases, &clause)
+		stmt.Cases = append(stmt.Cases, &clause)
 	}
 
 	p.skipNewlines()

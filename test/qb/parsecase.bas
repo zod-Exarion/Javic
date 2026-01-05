@@ -20,5 +20,8 @@ WHILE i <= n AND NOT i = 5
     i = i + 1
 WEND
 
+s$ = "hello"
+print "wow", s$
+
 PRINT "Done"
 END

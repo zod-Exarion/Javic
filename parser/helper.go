@@ -11,27 +11,30 @@ import (
 // INFO: Basic helper functions for making the parsed product human readable
 
 func (e Expression) String() string {
-	switch e.kind {
+	switch e.Kind {
 	case Number:
-		return strconv.FormatInt(e.numberExpression, 10)
+		return strconv.FormatInt(e.NumberExpression, 10)
+
+	case Decimal:
+		return strconv.FormatFloat(e.DecimalExpression, 'f', -1, 64)
 
 	case Ident:
-		return e.identExpression
+		return e.IdentExpression
 
 	case String:
-		return e.stringExpression
+		return e.StringExpression
 
 	case Binary:
 		return "(" +
-			e.binaryExpression.left.String() +
-			" " + e.binaryExpression.op + " " +
-			e.binaryExpression.right.String() +
+			e.BinaryExpression.Left.String() +
+			" " + e.BinaryExpression.Op + " " +
+			e.BinaryExpression.Right.String() +
 			")"
 
 	case Unary:
 		return "(" +
-			e.unaryExpression.op +
-			e.unaryExpression.expression.String() +
+			e.UnaryExpression.Op +
+			e.UnaryExpression.Expression.String() +
 			")"
 
 	default:
@@ -40,23 +43,23 @@ func (e Expression) String() string {
 }
 
 func (s Statement) String() string {
-	switch s.kind {
+	switch s.Kind {
 	case Rem:
-		return "REM " + s.remStatement.body
+		return "REM " + s.RemStatement.Body
 	case Let:
-		return "LET " + s.letStatement.name + " = " + s.letStatement.value.String()
+		return "LET " + s.LetStatement.Name + " = " + s.LetStatement.Value.String()
 
 	case Print:
-		return s.printStatement.String()
+		return s.PrintStatement.String()
 
 	case Input:
-		return "INPUT " + s.inputStatement.prompt + " , " + s.inputStatement.name
+		return "INPUT " + s.InputStatement.Prompt + " , " + s.InputStatement.Name
 
 	case If:
-		return s.ifStatement.String()
+		return s.IfStatement.String()
 
 	case For:
-		return s.forStatement.String()
+		return s.ForStatement.String()
 
 	case Cls:
 		return "CLS"
@@ -65,16 +68,16 @@ func (s Statement) String() string {
 		return "END"
 
 	case While:
-		return s.whileStatement.String()
+		return s.WhileStatement.String()
 
 	case Dim:
-		return "DIM " + s.dimStatement.name + " AS " + s.dimStatement.datatype
+		return "DIM " + s.DimStatement.Name + " AS " + s.DimStatement.Datatype
 
 	case Redim:
-		return "REDIM " + s.redimStatement.name
+		return "REDIM " + s.RedimStatement.Name
 
 	case Select:
-		return s.selectStatement.String()
+		return s.SelectStatement.String()
 
 	default:
 		return "<unknown stmt>"
@@ -85,17 +88,17 @@ func (i *IfStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("IF ")
-	out.WriteString(i.condition.String())
+	out.WriteString(i.Condition.String())
 	out.WriteString(" THEN\n")
 
-	for _, stmt := range i.consequence {
+	for _, stmt := range i.Consequence {
 		out.WriteString(stmt.String())
 		out.WriteString("\n")
 	}
 
-	if len(i.antecendent) > 0 {
+	if len(i.Antecendent) > 0 {
 		out.WriteString("ELSE\n")
-		for _, stmt := range i.antecendent {
+		for _, stmt := range i.Antecendent {
 			out.WriteString(stmt.String())
 			out.WriteString("\n")
 		}
@@ -110,15 +113,15 @@ func (f *ForStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("FOR ")
-	out.WriteString(f.name)
+	out.WriteString(f.Name)
 	out.WriteString(" = ")
-	out.WriteString(f.init.String())
+	out.WriteString(f.Init.String())
 	out.WriteString(" TO ")
-	out.WriteString(f.final.String())
+	out.WriteString(f.Final.String())
 	out.WriteString(" STEP ")
-	out.WriteString(f.step.String() + "\n")
+	out.WriteString(f.Step.String() + "\n")
 
-	for _, stmt := range f.body {
+	for _, stmt := range f.Body {
 		out.WriteString(stmt.String())
 		out.WriteString("\n")
 	}
@@ -132,8 +135,8 @@ func (w *WhileStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("WHILE ")
-	out.WriteString(w.condition.String() + "\n")
-	for _, stmt := range w.body {
+	out.WriteString(w.Condition.String() + "\n")
+	for _, stmt := range w.Body {
 		out.WriteString(stmt.String())
 		out.WriteString("\n")
 	}
@@ -146,23 +149,23 @@ func (s *SelectStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("SELECT CASE ")
-	out.WriteString(s.match.String())
+	out.WriteString(s.Match.String())
 	out.WriteString("\n")
 
-	for _, c := range s.cases {
+	for _, c := range s.Cases {
 		out.WriteString("CASE ")
-		out.WriteString(c.value.String())
+		out.WriteString(c.Value.String())
 		out.WriteString("\n")
-		for _, stmt := range c.body {
+		for _, stmt := range c.Body {
 			out.WriteString("  ")
 			out.WriteString(stmt.String())
 			out.WriteString("\n")
 		}
 	}
 
-	if s.defaultcase != nil {
+	if s.Defaultcase != nil {
 		out.WriteString("CASE ELSE\n")
-		for _, stmt := range s.defaultcase {
+		for _, stmt := range s.Defaultcase {
 			out.WriteString("  ")
 			out.WriteString(stmt.String())
 			out.WriteString("\n")
@@ -177,7 +180,7 @@ func (p *PrintStatement) String() string {
 	var out strings.Builder
 
 	out.WriteString("PRINT ")
-	for _, expr := range p.value {
+	for _, expr := range p.Value {
 		out.WriteString(expr.String())
 		out.WriteString(", ")
 	}
@@ -189,6 +192,7 @@ func DisplayStatements(statements []Statement) {
 	for i := range statements {
 		fmt.Printf("%v\n", statements[i])
 	}
+	fmt.Println("\n\n\n")
 }
 
 func (p *Parser) skipNewlines() {

@@ -56,7 +56,7 @@ func Parse(tokens []lexer.Token) []Statement {
 	// INFO: Loop though all the tokens and append it to the list of statements
 	for p.cur.Type != lexer.EOF {
 		stmt := p.ParseStatement()
-		if stmt.kind != 0 { // If parseStatment() returns empty statement(unrecognized) -> dont add it to the list
+		if stmt.Kind != 0 { // If parseStatment() returns empty statement(unrecognized) -> dont add it to the list
 			statements = append(statements, stmt)
 		}
 		p.next()
@@ -81,31 +81,31 @@ func (p *Parser) ParseStatement() Statement {
 	// p.skipNewlines()
 	switch p.cur.Type {
 	case lexer.REM:
-		return Statement{kind: Rem, remStatement: p.parseRemStatement()}
+		return Statement{Kind: Rem, RemStatement: p.parseRemStatement()}
 	case lexer.IDENT:
-		return Statement{kind: Let, letStatement: p.parseLetStatement()}
+		return Statement{Kind: Let, LetStatement: p.parseLetStatement()}
 	case lexer.LET:
-		return Statement{kind: Let, letStatement: p.parseLetStatement()}
+		return Statement{Kind: Let, LetStatement: p.parseLetStatement()}
 	case lexer.PRINT:
-		return Statement{kind: Print, printStatement: p.parsePrintStatement()}
+		return Statement{Kind: Print, PrintStatement: p.parsePrintStatement()}
 	case lexer.INPUT:
-		return Statement{kind: Input, inputStatement: p.parseInputStatement()}
+		return Statement{Kind: Input, InputStatement: p.parseInputStatement()}
 	case lexer.IF:
-		return Statement{kind: If, ifStatement: p.parseIfStatement()}
+		return Statement{Kind: If, IfStatement: p.parseIfStatement()}
 	case lexer.FOR:
-		return Statement{kind: For, forStatement: p.parseForStatement()}
+		return Statement{Kind: For, ForStatement: p.parseForStatement()}
 	case lexer.CLS:
-		return Statement{kind: Cls, clsStatement: p.parseClsStatement()}
+		return Statement{Kind: Cls, ClsStatement: p.parseClsStatement()}
 	case lexer.END:
-		return Statement{kind: End, endStatement: p.parseEndStatement()}
+		return Statement{Kind: End, EndStatement: p.parseEndStatement()}
 	case lexer.WHILE:
-		return Statement{kind: While, whileStatement: p.parseWhileStatement()}
+		return Statement{Kind: While, WhileStatement: p.parseWhileStatement()}
 	case lexer.DIM:
-		return Statement{kind: Dim, dimStatement: p.parseDimStatement()}
+		return Statement{Kind: Dim, DimStatement: p.parseDimStatement()}
 	case lexer.REDIM:
-		return Statement{kind: Redim, redimStatement: p.parseRedimStatement()}
+		return Statement{Kind: Redim, RedimStatement: p.parseRedimStatement()}
 	case lexer.SELECT:
-		return Statement{kind: Select, selectStatement: p.parseSelectStatement()}
+		return Statement{Kind: Select, SelectStatement: p.parseSelectStatement()}
 	default:
 		return Statement{} // unrecognizable statmenet, doesnt get added in the final list of statemnets
 	}
