@@ -72,10 +72,11 @@ const (
 	SINGLE  = "SINGLE"
 	DOUBLE  = "DOUBLE"
 	STRING  = "STRING"
+	SELECT  = "SELECT"
+	CASE    = "CASE"
 
 	// WILL WE EVER GET TO THESE I DONT KNOW RAHH
-	SELECT = "SELECT"
-	CASE   = "CASE"
+	// oh there are none left yay im done question mark
 
 	// I dont really know if I want to
 	FUNCTION = "FUNCTION"

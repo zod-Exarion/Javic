@@ -7,10 +7,11 @@ import (
 )
 
 type Emitter struct {
-	out     strings.Builder
-	indent  int
-	imports strings.Builder
-	symbols map[string]VarType
+	out        strings.Builder
+	indent     int
+	imports    strings.Builder
+	terminates strings.Builder
+	symbols    map[string]VarType
 }
 
 func Emit(stmts []parser.Statement) string {
@@ -27,12 +28,14 @@ func Emit(stmts []parser.Statement) string {
 		e.emitStatement(stmt)
 	}
 
+	e.emitLine(e.terminates.String())
+
 	e.indent--
 	e.emitLine("}")
 	e.indent--
 	e.emitLine("}")
 
-	return e.out.String()
+	return e.imports.String() + e.out.String()
 }
 
 func (e *Emitter) emitLine(s string) {
@@ -65,5 +68,14 @@ func (e *Emitter) emitStatement(stmt parser.Statement) {
 		// ignore
 	default:
 		panic("unknown statement")
+	}
+}
+
+func (e *Emitter) checkScanner() {
+	if !scannerFlag {
+		e.imports.WriteString("import java.util.Scanner;\n")
+		e.emitLine("Scanner scanner = new Scanner(System.in);")
+		e.terminates.WriteString("scanner.close()")
+		scannerFlag = true
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"github.com/zod-Exarion/javic/parser"
 )
 
+var scannerFlag = false
+
 func (e *Emitter) emitLet(stmt *parser.LetStatement) {
 	name := stmt.Name
 	expr := stmt.Value
@@ -34,7 +36,7 @@ func (e *Emitter) emitLet(stmt *parser.LetStatement) {
 }
 
 func (e *Emitter) emitPrint(s *parser.PrintStatement) {
-	e.imports.WriteString("import java.util.Scanner;\n")
+	e.checkScanner()
 
 	parts := []string{}
 	for _, v := range s.Value {
@@ -44,6 +46,8 @@ func (e *Emitter) emitPrint(s *parser.PrintStatement) {
 }
 
 func (e *Emitter) emitInput(s *parser.InputStatement) {
+	e.checkScanner()
+
 	name := s.Name
 	varType := inferVarTypeFromName(name)
 
