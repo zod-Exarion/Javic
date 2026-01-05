@@ -104,10 +104,7 @@ func (e *Emitter) emitWhile(s *parser.WhileStatement) {
 }
 
 func (e *Emitter) emitFor(s *parser.ForStatement) {
-	step := "1"
-	if s.Step.Kind != 0 {
-		step = e.emitExpr(s.Step)
-	}
+	step := e.emitExpr(s.Step)
 
 	e.emitLine(
 		"for (int " + s.Name +

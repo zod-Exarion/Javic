@@ -91,21 +91,7 @@ func (p *Parser) parseExpression(prec int) Expression {
 func (p *Parser) parsePrimary() Expression {
 	switch p.cur.Type {
 	case lexer.NUMBER:
-		if strings.Contains(p.cur.Lit, ".") {
-			f, err := strconv.ParseFloat(p.cur.Lit, 64)
-			if err != nil {
-				log.Fatalf("Invalid decimal literal: %s", p.cur.Lit)
-			}
-			return Expression{Kind: Decimal, DecimalExpression: f}
-		}
-
-		i, err := strconv.ParseInt(p.cur.Lit, 10, 64)
-		if err != nil {
-			log.Fatalf("Invalid integer literal: %s", p.cur.Lit)
-		}
-
-		return Expression{Kind: Number, NumberExpression: i}
-
+		return p.parseNumberExpression()
 	case lexer.IDENT:
 		return Expression{Kind: Ident, IdentExpression: p.cur.Lit} // simply return identifier
 	case lexer.LPAREN:
@@ -114,8 +100,13 @@ func (p *Parser) parsePrimary() Expression {
 		return Expression{Kind: String, StringExpression: p.cur.Lit}
 	case lexer.NOT:
 		return p.parseNotExpression()
+	case lexer.MINUS:
+		p.expectToken(lexer.NUMBER)
+		expr := p.parseNumberExpression()
+		expr2 := Expression{Kind: expr.Kind, NumberExpression: expr.NumberExpression * -1}
+		return expr2
 	default:
-		log.Fatal("Unrecognized expression")
+		log.Fatalf("Unrecognized expression, cur: [%v -> %v]  and peek: [%v -> %v]\n", p.cur.Type, p.cur.Lit, p.peek.Type, p.peek.Lit)
 		return Expression{} // unrecognizable expression, doesnt get added in the final list of expressions
 	}
 }
@@ -141,6 +132,23 @@ func (p *Parser) parseNotExpression() Expression {
 			Expression: expr,
 		},
 	}
+}
+
+func (p *Parser) parseNumberExpression() Expression {
+	if strings.Contains(p.cur.Lit, ".") {
+		f, err := strconv.ParseFloat(p.cur.Lit, 64)
+		if err != nil {
+			log.Fatalf("Invalid decimal literal: %s", p.cur.Lit)
+		}
+		return Expression{Kind: Decimal, DecimalExpression: f}
+	}
+
+	i, err := strconv.ParseInt(p.cur.Lit, 10, 64)
+	if err != nil {
+		log.Fatalf("Invalid integer literal: %s", p.cur.Lit)
+	}
+
+	return Expression{Kind: Number, NumberExpression: i}
 }
 
 func (p *Parser) expressionEnd() bool {

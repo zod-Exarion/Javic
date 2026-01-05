@@ -127,6 +127,7 @@ func (p *Parser) parsePrintStatement() *PrintStatement {
 		p.next()
 		p.next()
 		stmt.Value = append(stmt.Value, p.parseExpression(0))
+		// p.next()
 	}
 
 	return stmt
@@ -224,13 +225,7 @@ func (p *Parser) parseForStatement() *ForStatement {
 		p.next()
 	}
 
-	// p.next() // consume NEXT
-
-	if p.cur.Type == lexer.IDENT {
-		p.next()
-	}
-
-	// p.skipNewlines()
+	p.next() // consume NEXT
 
 	return stmt
 }
