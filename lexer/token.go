@@ -8,7 +8,10 @@ package lexer
 * Functions: Simple helper functions which return the TokenType of the series of runes passed
  */
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type TokenType string
 
@@ -35,15 +38,18 @@ func checkSingleton(ident string) TokenType {
 }
 
 // DisplayTokens public function to print a slice(list) of tokens
-func DisplayTokens(toks []Token) {
+func DisplayTokens(toks []Token) string {
+	var out strings.Builder
 	for _, tok := range toks {
 		if tok.Type == EOF {
 			break
 		} else if tok.Type == NLINE {
-			fmt.Println()
+			out.WriteString("\n")
 		} else {
-			fmt.Printf("[%v -> %v] ", tok.Type, tok.Lit)
+			out.WriteString(fmt.Sprintf("[%v -> %v] ", tok.Type, tok.Lit))
 		}
 	}
-	fmt.Println("\n\n\n")
+	out.WriteString("\n\n\n")
+
+	return out.String()
 }

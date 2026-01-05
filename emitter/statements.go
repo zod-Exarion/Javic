@@ -36,8 +36,6 @@ func (e *Emitter) emitLet(stmt *parser.LetStatement) {
 }
 
 func (e *Emitter) emitPrint(s *parser.PrintStatement) {
-	e.checkScanner()
-
 	parts := []string{}
 	for _, v := range s.Value {
 		parts = append(parts, e.emitExpr(v))

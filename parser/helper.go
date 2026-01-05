@@ -188,11 +188,13 @@ func (p *PrintStatement) String() string {
 	return out.String()
 }
 
-func DisplayStatements(statements []Statement) {
+func DisplayStatements(statements []Statement) string {
+	var out strings.Builder
 	for i := range statements {
-		fmt.Printf("%v\n", statements[i])
+		out.WriteString(fmt.Sprintf("%v\n", statements[i]))
 	}
-	fmt.Println("\n\n\n")
+	out.WriteString("\n\n\n")
+	return out.String()
 }
 
 func (p *Parser) skipNewlines() {

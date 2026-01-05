@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/zod-Exarion/javic/emitter"
+	"github.com/zod-Exarion/javic/external"
 	"github.com/zod-Exarion/javic/lexer"
 	"github.com/zod-Exarion/javic/parser"
 )
@@ -14,7 +15,12 @@ import (
 func main() {
 	argslength := len(os.Args)
 	if argslength < 2 {
-		log.Fatal("Usage: javic <file.bas>")
+		log.Fatal("Usage: javic <file.bas>      OR     javic gui")
+	}
+
+	if os.Args[1] == "gui" {
+		external.NewGUI()
+		return
 	}
 
 	filename := os.Args[1]
@@ -31,12 +37,12 @@ func main() {
 
 	tokens := lexer.Lex(string(content))
 	if argslength >= 3 && os.Args[2] == "tokens" {
-		lexer.DisplayTokens(tokens)
+		fmt.Println(lexer.DisplayTokens(tokens))
 	}
 
 	statements := parser.Parse(tokens)
 	if argslength >= 4 && os.Args[3] == "ast" {
-		parser.DisplayStatements(statements)
+		fmt.Println(parser.DisplayStatements(statements))
 	}
 
 	result := emitter.Emit(statements)
